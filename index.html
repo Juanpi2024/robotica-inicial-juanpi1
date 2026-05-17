@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Misión: Constructor de Robots Galácticos 🚀</title>
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Aprende robótica espacial construyendo y programando robots interactivos. Diseñado para pequeños astronautas de 8 años en adelante.">
+    <meta name="keywords" content="robótica, espacial, niños, lego wedo, sphero bolt, programación bloques, nasa, juanpi">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome for Premium Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Background Starry Cosmos -->
+    <div class="stars"></div>
+    <div class="twinkling"></div>
+    
+    <!-- Top Cockpit Dashboard / Navigation Bar -->
+    <header class="hud-header">
+        <div class="hud-logo">
+            <i class="fa-solid fa-satellite-dish pulse-icon"></i>
+            <span>Flota Estelar <span>NASA</span></span>
+        </div>
+        <nav class="hud-nav" id="hud-nav-bar">
+            <button class="nav-btn active" data-target="intro" id="btn-nav-intro"><i class="fa-solid fa-rocket"></i> Inicio</button>
+            <button class="nav-btn" data-target="fase1" id="btn-nav-fase1"><i class="fa-solid fa-pen-ruler"></i> 1. Diseña</button>
+            <button class="nav-btn" data-target="fase2" id="btn-nav-fase2"><i class="fa-solid fa-gears"></i> 2. Hardware</button>
+            <button class="nav-btn" data-target="fase3" id="btn-nav-fase3"><i class="fa-solid fa-code"></i> 3. Código</button>
+            <button class="nav-btn" data-target="fase4" id="btn-nav-fase4"><i class="fa-solid fa-book-atlas"></i> 4. Bitácora</button>
+            <button class="nav-btn" data-target="quiz" id="btn-nav-quiz"><i class="fa-solid fa-circle-question"></i> Quiz</button>
+        </nav>
+        <div class="hud-user">
+            <i class="fa-solid fa-user-astronaut"></i>
+            <span id="user-display">Astro-Juanpi 🎖️</span>
+        </div>
+    </header>
+
+    <!-- Main Container for Space Sections -->
+    <main class="space-ship-cabin">
+        
+        <!-- SECTION 1: INTRODUCTION -->
+        <section id="sect-intro" class="mission-section active-section">
+            <div class="intro-grid">
+                <div class="intro-visual">
+                    <div class="avatar-container">
+                        <img src="assets/galactic_robot_banner.png" alt="Astro-Robot de la NASA" class="hero-banner-img">
+                        <div class="avatar-glow"></div>
+                    </div>
+                </div>
+                <div class="intro-content glass-card">
+                    <span class="badge badge-primary"><i class="fa-solid fa-satellite"></i> Transmisión Entrante</span>
+                    <h1 class="glow-title">¡Bienvenido a la Flota Espacial, Juanpi! 🚀</h1>
+                    <p class="intro-text">
+                        "¡Hola, aventurero! La NASA está explorando lo desconocido en el espacio y necesita tu ayuda para construir los exploradores del futuro. Los robots son máquinas que pueden hacer tareas peligrosas o repetitivas por nosotros, ¡como caminar sobre la Luna o Marte!"
+                    </p>
+                    <div class="commander-signature">
+                        <div class="signature-icon"><i class="fa-solid fa-user-tie"></i></div>
+                        <div>
+                            <h4>Comandante Juanpi</h4>
+                            <p>Director de Astro-Ingeniería Educativa</p>
+                        </div>
+                    </div>
+                    
+                    <button class="btn btn-action" id="btn-listen-msg">
+                        <i class="fa-solid fa-volume-high"></i> Escuchar Mensaje de la Misión
+                    </button>
+                    <div class="audio-wave-container" id="audio-wave">
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: FASE 1 - BLUEPRINT PAINT -->
+        <section id="sect-fase1" class="mission-section">
+            <div class="section-header">
+                <span class="step-num">Fase 1</span>
+                <h2>¡Imagina y Diseña tu Astro-Robot! ✏️</h2>
+                <p>Todo gran invento empieza con una idea. Dibuja tu propio robot espacial. ¿Tendrá ruedas para el polvo lunar o patas para saltar cráteres?</p>
+            </div>
+            
+            <div class="canvas-grid">
+                <!-- Paint Controls Panel -->
+                <div class="paint-controls glass-card">
+                    <h3><i class="fa-solid fa-palette"></i> Caja de Colores</h3>
+                    <div class="palette-colors">
+                        <button class="color-btn active" data-color="#00f3ff" style="background-color: #00f3ff;"></button>
+                        <button class="color-btn" data-color="#ff007f" style="background-color: #ff007f;"></button>
+                        <button class="color-btn" data-color="#39ff14" style="background-color: #39ff14;"></button>
+                        <button class="color-btn" data-color="#ff7700" style="background-color: #ff7700;"></button>
+                        <button class="color-btn" data-color="#ffea00" style="background-color: #ffea00;"></button>
+                        <button class="color-btn" data-color="#ffffff" style="background-color: #ffffff;"></button>
+                        <button class="color-btn" data-color="#07071e" style="background-color: #07071e; border: 1px dashed var(--cyan-glow);"></button>
+                    </div>
+                    
+                    <h3><i class="fa-solid fa-brush"></i> Herramientas</h3>
+                    <div class="tool-buttons">
+                        <button class="tool-btn active" id="tool-pencil"><i class="fa-solid fa-pen"></i> Lápiz</button>
+                        <button class="tool-btn" id="tool-brush"><i class="fa-solid fa-paint-brush"></i> Pincel</button>
+                        <button class="tool-btn" id="tool-eraser"><i class="fa-solid fa-eraser"></i> Borrador</button>
+                    </div>
+
+                    <h3><i class="fa-solid fa-sliders"></i> Grosor: <span id="brush-size-val">5px</span></h3>
+                    <input type="range" id="brush-size" min="1" max="30" value="5" class="cosmic-slider">
+                    
+                    <div class="action-buttons">
+                        <button class="btn btn-danger" id="paint-clear"><i class="fa-solid fa-trash-can"></i> Limpiar</button>
+                        <button class="btn btn-secondary" id="paint-download"><i class="fa-solid fa-download"></i> Descargar</button>
+                        <button class="btn btn-success" id="paint-save"><i class="fa-solid fa-floppy-disk"></i> Guardar en Bitácora</button>
+                    </div>
+                </div>
+
+                <!-- Painting Area -->
+                <div class="paint-canvas-container glass-card">
+                    <div class="canvas-tag"><i class="fa-solid fa-circle-nodes"></i> Plano Galáctico de Ingeniería</div>
+                    <canvas id="blueprint-canvas" width="700" height="450"></canvas>
+                    <div class="canvas-hint">¡Haz clic y arrastra para dibujar tu obra maestra!</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: FASE 2 - HARDWARE TOOLBOX -->
+        <section id="sect-fase2" class="mission-section">
+            <div class="section-header">
+                <span class="step-num">Fase 2</span>
+                <h2>El Cuerpo del Robot (Hardware) ⚙️</h2>
+                <p>Un robot espacial tiene tres partes mágicas: <strong>Cuerpo</strong> (motores/estructuras), <strong>Cerebro</strong> (sistema de control) y <strong>Sensores</strong> (sus sentidos). ¡Interactúa con ellos en nuestra caja de herramientas!</p>
+            </div>
+
+            <div class="hardware-grid">
+                
+                <!-- CARD 1: EL CUERPO (MOTOR) -->
+                <div class="hardware-card glass-card" id="hw-card-body">
+                    <div class="hw-card-icon"><i class="fa-solid fa-gears"></i></div>
+                    <h3>1. El Cuerpo (Motor WeDo)</h3>
+                    <p>Su estructura física y motores. ¡Le permiten moverse, girar sus ruedas y explorar terrenos espaciales difíciles!</p>
+                    
+                    <div class="interactive-area body-sim">
+                        <!-- CSS Motor Animation -->
+                        <div class="motor-wrapper">
+                            <div class="motor-chassis">
+                                <div class="gear-cog main-gear" id="motor-gear-1"><i class="fa-solid fa-gear"></i></div>
+                                <div class="gear-cog sub-gear" id="motor-gear-2"><i class="fa-solid fa-gear"></i></div>
+                            </div>
+                            <div class="motor-shaft"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="hw-controls">
+                        <button class="btn btn-speed active" data-speed="0">APAGADO</button>
+                        <button class="btn btn-speed" data-speed="1">LENTO 🛸</button>
+                        <button class="btn btn-speed" data-speed="3">HIPERVELOCIDAD 🚀</button>
+                    </div>
+                </div>
+
+                <!-- CARD 2: CEREBRO (SPHERO BOLT) -->
+                <div class="hardware-card glass-card" id="hw-card-brain">
+                    <div class="hw-card-icon"><i class="fa-solid fa-brain"></i></div>
+                    <h3>2. El Cerebro (Sphero BOLT)</h3>
+                    <p>El Sistema de Control. Recibe órdenes y procesa el código. ¡Tiene una pantalla LED para mostrar emociones y mensajes!</p>
+                    
+                    <div class="interactive-area brain-sim">
+                        <!-- Sphero Bolt SVG Interactive screen -->
+                        <div class="sphero-bolt" id="sphero-bolt-orb">
+                            <div class="sphero-inner">
+                                <div class="sphero-led-matrix" id="led-matrix">
+                                    <!-- 8x8 LED Grid generated in JS -->
+                                </div>
+                            </div>
+                            <div class="sphero-ring"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="hw-controls">
+                        <button class="btn btn-brain-cmd" id="btn-bolt-mood">Cambiar Expresión 😄</button>
+                        <button class="btn btn-brain-cmd" id="btn-bolt-gyro">Girar Giroscopio 🔄</button>
+                    </div>
+                </div>
+
+                <!-- CARD 3: LOS SENSORES (OJO DE ULTRASONIDO) -->
+                <div class="hardware-card glass-card" id="hw-card-sensors">
+                    <div class="hw-card-icon"><i class="fa-solid fa-eye"></i></div>
+                    <h3>3. Sensores (Ultrasonido WeDo)</h3>
+                    <p>¡Son sus sentidos! Detectan obstáculos en el espacio, miden distancias y evitan que el robot choque con cráteres gigantes.</p>
+                    
+                    <div class="interactive-area sensor-sim">
+                        <!-- Range/Distance Sensor Sim -->
+                        <div class="sensor-device">
+                            <div class="sensor-eyes">
+                                <div class="sensor-eye eye-left"><div class="pupil"></div></div>
+                                <div class="sensor-eye eye-right"><div class="pupil"></div></div>
+                            </div>
+                            <div class="sensor-waves" id="radar-waves">
+                                <span class="wave"></span>
+                                <span class="wave"></span>
+                                <span class="wave"></span>
+                            </div>
+                        </div>
+                        
+                        <!-- Drag asteroid target -->
+                        <div class="draggable-asteroid" id="draggable-asteroid">
+                            <i class="fa-solid fa-meteor"></i>
+                            <span>Asteroide</span>
+                        </div>
+                    </div>
+                    
+                    <div class="sensor-readout">
+                        <div>Distancia del Obstáculo: <span id="sensor-distance">300</span> cm</div>
+                        <div class="alert-status" id="sensor-status">Estado: SEGURO 🟢</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: FASE 3 - BLOCK PROGRAMMING SIMULATOR -->
+        <section id="sect-fase3" class="mission-section">
+            <div class="section-header">
+                <span class="step-num">Fase 3</span>
+                <h2>¡Dales Vida con Código! (Software) 💻</h2>
+                <p>Para que tu robot se mueva en Marte, debes darle instrucciones lógicas. ¡Arrastra o haz clic en los bloques de programación de colores y supera el reto galáctico!</p>
+            </div>
+
+            <!-- Programmer Challenge Card -->
+            <div class="challenge-alert glass-card">
+                <div class="challenge-icon"><i class="fa-solid fa-trophy"></i></div>
+                <div class="challenge-body">
+                    <h4>EL RETO DEL PROGRAMADOR CÓSMICO:</h4>
+                    <p>¿Puedes hacer que tu robot <strong>avance 5 segundos</strong> y se <strong>detenga</strong> al <strong>ver un cráter</strong>?</p>
+                </div>
+            </div>
+
+            <div class="coding-workspace-grid">
+                
+                <!-- Blocks Palette -->
+                <div class="blocks-palette glass-card">
+                    <h3><i class="fa-solid fa-puzzle-piece"></i> Bloques de Órdenes</h3>
+                    <p class="desc-text">Haz clic en un bloque para agregarlo a tu secuencia de comandos:</p>
+                    
+                    <div class="palette-container">
+                        <!-- Command blocks -->
+                        <div class="code-block block-move" data-block-type="mover" draggable="true" id="block-move-forward">
+                            <i class="fa-solid fa-up-long"></i> Mover Adelante 🚀
+                        </div>
+                        
+                        <div class="code-block block-wait" data-block-type="esperar" draggable="true" id="block-wait-5">
+                            <i class="fa-solid fa-stopwatch"></i> Esperar 5 Segundos ⏱️
+                        </div>
+                        
+                        <div class="code-block block-sensor" data-block-type="detectar" draggable="true" id="block-detect-crater">
+                            <i class="fa-solid fa-eye"></i> Detectar Cráter 👁️
+                        </div>
+                        
+                        <div class="code-block block-stop" data-block-type="detener" draggable="true" id="block-stop-robot">
+                            <i class="fa-solid fa-hand"></i> Detener Robot 🛑
+                        </div>
+                    </div>
+                    
+                    <div class="palette-tips">
+                        <h5><i class="fa-solid fa-lightbulb"></i> Pista del Comandante:</h5>
+                        <p>Los bloques se ejecutan en orden de arriba a abajo. Asegúrate de detener el robot justo a tiempo.</p>
+                    </div>
+                </div>
+
+                <!-- Coding Canvas / Workspace Sequence -->
+                <div class="workspace-area glass-card">
+                    <div class="workspace-header">
+                        <h3><i class="fa-solid fa-laptop-code"></i> Tu Programa Espacial</h3>
+                        <button class="btn btn-sm btn-danger" id="workspace-clear"><i class="fa-solid fa-trash-can"></i> Reiniciar Bloques</button>
+                    </div>
+                    
+                    <div class="blocks-sequence-container" id="blocks-workspace">
+                        <!-- Dropzone placeholder -->
+                        <div class="workspace-empty-msg" id="workspace-empty">
+                            <i class="fa-solid fa-arrow-down-long animate-arrow"></i>
+                            <span>Haz clic en los bloques de la izquierda para colocarlos en la secuencia aquí.</span>
+                        </div>
+                    </div>
+                    
+                    <div class="workspace-actions">
+                        <button class="btn btn-success" id="btn-run-simulation"><i class="fa-solid fa-play"></i> Ejecutar Código ⚡</button>
+                        <button class="btn btn-secondary" id="btn-reset-simulation"><i class="fa-solid fa-rotate-left"></i> Reiniciar Mapa</button>
+                    </div>
+                </div>
+
+                <!-- Simulation Canvas (Mars Landscape) -->
+                <div class="simulation-panel glass-card">
+                    <div class="simulation-header">
+                        <span><i class="fa-solid fa-satellite-dish"></i> Telemetría de Marte (Simulador)</span>
+                        <div class="sim-badge" id="sim-status-badge">LISTO</div>
+                    </div>
+                    <div class="sim-canvas-container">
+                        <canvas id="mars-sim-canvas" width="450" height="350"></canvas>
+                        
+                        <!-- HUD indicators overlay -->
+                        <div class="sim-hud">
+                            <div class="hud-stat">
+                                <span class="label">BATERÍA:</span>
+                                <span class="val">100% <i class="fa-solid fa-battery-full"></i></span>
+                            </div>
+                            <div class="hud-stat">
+                                <span class="label">TIEMPO:</span>
+                                <span class="val" id="sim-timer">0.0s</span>
+                            </div>
+                            <div class="hud-stat">
+                                <span class="label">LIDAR:</span>
+                                <span class="val" id="sim-lidar">300m</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 5: FASE 4 - PROJECTS WALL & DIPLOMA -->
+        <section id="sect-fase4" class="mission-section">
+            <div class="section-header">
+                <span class="step-num">Fase 4</span>
+                <h2>Proyectos Especiales de Bitácora 🛠️</h2>
+                <p>¡Lleva la robótica a la realidad! Construye estos proyectos en casa con materiales reciclados o tus kits de robótica, interactúa con sus simuladores y obtén tu Diploma Oficial de la NASA.</p>
+            </div>
+
+            <!-- Interactive Physical Project Simulators -->
+            <div class="projects-grid">
+                
+                <!-- Project 1: Roberto de Marte -->
+                <div class="project-card glass-card">
+                    <span class="badge badge-cyan">Proyecto 1</span>
+                    <h3>Roberto de Marte 🤖</h3>
+                    <p>Un robot bípede que puede mover la boca, los ojos y caminar sobre terrenos marcianos muy empinados.</p>
+                    
+                    <div class="project-simulator roberto-sim">
+                        <div class="roberto-robot" id="roberto-puppet">
+                            <div class="roberto-eye-left"><div class="pupil"></div></div>
+                            <div class="roberto-eye-right"><div class="pupil"></div></div>
+                            <div class="roberto-jaw" id="roberto-jaw-el"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="project-controls">
+                        <label for="roberto-slider-mouth">Mover Boca:</label>
+                        <input type="range" id="roberto-slider-mouth" min="0" max="40" value="0" class="cosmic-slider">
+                        <button class="btn btn-action-sm" id="btn-roberto-talk">¡Hablar! 🗣️</button>
+                    </div>
+                </div>
+
+                <!-- Project 2: Alarma Anti-Heladas -->
+                <div class="project-card glass-card">
+                    <span class="badge badge-magenta">Proyecto 2</span>
+                    <h3>Alarma Anti-Heladas ❄️</h3>
+                    <p>¡Evita que los astronautas se congelen! Este dispositivo avisa con luces y sonidos si el clima baja bruscamente en Marte.</p>
+                    
+                    <div class="project-simulator weather-sim" id="weather-ambient">
+                        <div class="led-alarm-light" id="frost-strobe"></div>
+                        <div class="temp-screen" id="temp-display">25°C</div>
+                        <div class="temp-condition" id="temp-status">Clima Templado</div>
+                    </div>
+                    
+                    <div class="project-controls">
+                        <label for="temp-slider">Temperatura Marciana:</label>
+                        <input type="range" id="temp-slider" min="-100" max="50" value="25" class="cosmic-slider">
+                        <div class="temp-bounds"><span>-100°C 🥶</span><span>50°C 🥵</span></div>
+                    </div>
+                </div>
+
+                <!-- Project 3: El Singular Pateador -->
+                <div class="project-card glass-card">
+                    <span class="badge badge-orange">Proyecto 3</span>
+                    <h3>El Singular Pateador ⚽</h3>
+                    <p>¡Fútbol lunar! Un robot diseñado para aprender sobre palancas y fuerzas físicas pateando balones en baja gravedad.</p>
+                    
+                    <div class="project-simulator physics-sim">
+                        <canvas id="kicker-canvas" width="280" height="150"></canvas>
+                        
+                        <div class="kicker-power-bar">
+                            <div class="kicker-power-fill" id="kicker-power-meter"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="project-controls">
+                        <button class="btn btn-action-sm" id="btn-kicker-pull"><i class="fa-solid fa-wrench"></i> Cargar Palanca</button>
+                        <button class="btn btn-success-sm" id="btn-kicker-shoot"><i class="fa-solid fa-circle-play"></i> ¡Patear! 🥅</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- NASA Astro-Engineer Diploma Upload & Generation -->
+            <div class="diploma-generator-box glass-card">
+                <div class="diploma-form-grid">
+                    <div class="diploma-form-inputs">
+                        <div class="inputs-header">
+                            <i class="fa-solid fa-award"></i>
+                            <div>
+                                <h3>¡Reclama tu Medalla de Ingeniero de la NASA! 🏅</h3>
+                                <p>Ingresa tu nombre y sube una foto de tu creación real (o usa tu boceto del plano) para recibir tu diploma oficial.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="diploma-name">Nombre del Astro-Ingeniero:</label>
+                            <input type="text" id="diploma-name" value="Juanpi" placeholder="Tu Nombre Aquí" class="cosmic-input">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="diploma-photo-input">Sube una foto de tu Robot Real (Opcional):</label>
+                            <div class="upload-dropzone" id="upload-zone">
+                                <i class="fa-solid fa-cloud-arrow-up"></i>
+                                <span>Arrastra tu foto aquí o haz clic para subir</span>
+                                <input type="file" id="diploma-photo-input" accept="image/*" style="display: none;">
+                            </div>
+                            <div class="upload-preview" id="photo-preview-container">
+                                <img id="photo-preview-img" src="" alt="Vista previa de tu creación">
+                                <button type="button" class="btn-clear-img" id="btn-remove-photo"><i class="fa-solid fa-xmark"></i></button>
+                            </div>
+                        </div>
+
+                        <button class="btn btn-success w-full" id="btn-generate-diploma">
+                            <i class="fa-solid fa-certificate"></i> Fabricar Mi Diploma de la NASA 📜
+                        </button>
+                    </div>
+
+                    <!-- Canvas Output / Diploma Preview -->
+                    <div class="diploma-preview-container">
+                        <div class="preview-badge"><i class="fa-solid fa-eye"></i> Vista Previa del Diploma</div>
+                        <div class="diploma-canvas-wrapper">
+                            <canvas id="diploma-canvas" width="600" height="420"></canvas>
+                        </div>
+                        <button class="btn btn-secondary w-full" id="btn-download-diploma" disabled>
+                            <i class="fa-solid fa-download"></i> Guardar Diploma en mi Dispositivo 📥
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 6: CONCENTRATION & QUIZ -->
+        <section id="sect-quiz" class="mission-section">
+            <div class="section-header">
+                <span class="step-num">Conclusión</span>
+                <h2>Cuestionario de Astro-Experto 🌟</h2>
+                <p>Reflexiona sobre tu misión y demuestra tus conocimientos robóticos para ganar puntos de la flota espacial.</p>
+            </div>
+
+            <div class="quiz-container-box">
+                <!-- Quiz Interactive Box -->
+                <div class="quiz-main glass-card" id="quiz-game-panel">
+                    
+                    <!-- Progress hud -->
+                    <div class="quiz-hud">
+                        <div class="quiz-progress-bar">
+                            <div class="progress-fill" id="quiz-progress" style="width: 0%;"></div>
+                        </div>
+                        <div class="quiz-stats">
+                            <span>Pregunta <span id="quiz-current-index">1</span> de 5</span>
+                            <span class="quiz-score"><i class="fa-solid fa-star text-gold"></i> Puntos: <span id="quiz-points">0</span></span>
+                            <span class="quiz-lives" id="quiz-lives-container">
+                                <i class="fa-solid fa-heart text-red"></i>
+                                <i class="fa-solid fa-heart text-red"></i>
+                                <i class="fa-solid fa-heart text-red"></i>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Question Container -->
+                    <div class="quiz-question-area" id="quiz-question-container">
+                        <h3 id="quiz-question-text">¿Cargando pregunta estelar...?</h3>
+                        
+                        <div class="quiz-options-list" id="quiz-options-list">
+                            <!-- JS will generate 4 beautiful glow buttons here -->
+                        </div>
+                    </div>
+
+                    <!-- Feedbacks and Next buttons -->
+                    <div class="quiz-feedback-box" id="quiz-feedback-box">
+                        <div class="feedback-icon" id="quiz-feedback-icon"></div>
+                        <div class="feedback-texts">
+                            <h4 id="quiz-feedback-title">¡Excelente!</h4>
+                            <p id="quiz-feedback-desc">Respuesta correcta.</p>
+                        </div>
+                        <button class="btn btn-action" id="btn-quiz-next">Siguiente Pregunta <i class="fa-solid fa-arrow-right"></i></button>
+                    </div>
+                </div>
+
+                <!-- Final Screen Score Board -->
+                <div class="quiz-victory-panel glass-card" id="quiz-victory-panel">
+                    <i class="fa-solid fa-trophy victory-trophy"></i>
+                    <h2>¡Misión Completada, Comandante Juanpi! 🎉</h2>
+                    <p class="sub-text">Has demostrado ser un verdadero experto en robótica y tecnología espacial.</p>
+                    
+                    <div class="victory-stats">
+                        <div class="stat-bubble">
+                            <span class="num" id="victory-score">500</span>
+                            <span class="lbl">Puntos Totales</span>
+                        </div>
+                        <div class="stat-bubble">
+                            <span class="num" id="victory-correct">5/5</span>
+                            <span class="lbl">Respuestas Correctas</span>
+                        </div>
+                        <div class="stat-bubble">
+                            <span class="num" id="victory-rank">Comandante Supremo</span>
+                            <span class="lbl">Rango de Ingeniero</span>
+                        </div>
+                    </div>
+
+                    <p class="reflection-msg">
+                        <em>"¡Recuerda que equivocarse es parte de aprender! Todo error es simplemente un dato de sensor para recalcular nuestra ruta espacial."</em>
+                    </p>
+
+                    <div class="victory-actions">
+                        <button class="btn btn-action" id="btn-quiz-restart"><i class="fa-solid fa-rotate-left"></i> Jugar de Nuevo</button>
+                        <button class="btn btn-success" id="btn-goto-diploma"><i class="fa-solid fa-certificate"></i> Ir por mi Medalla 🏅</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Modal for Special Roberto Walking Puppet -->
+    <div class="modal-backdrop" id="modal-roberto">
+        <div class="modal-box glass-card">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-robot"></i> Roberto de Marte Caminando</h3>
+                <button class="modal-close" id="btn-close-roberto"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <p>Mira cómo camina Roberto usando palancas en sus dos patas de bípede:</p>
+                <div class="puppet-stage">
+                    <div class="walking-roberto-mesh">
+                        <div class="walk-body">
+                            <div class="walk-eye"></div>
+                            <div class="walk-leg leg-left"></div>
+                            <div class="walk-leg leg-right"></div>
+                        </div>
+                    </div>
+                    <div class="mars-dust-moving"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Celebration Confetti Overlay -->
+    <canvas id="confetti-canvas"></canvas>
+
+    <!-- App JS Logic -->
+    <script src="app.js"></script>
+</body>
+</html>
