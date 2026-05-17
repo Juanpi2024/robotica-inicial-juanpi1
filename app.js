@@ -1,7 +1,7 @@
 /**
- * MISIÓN: CONSTRUCTOR DE ROBOTS GALÁCTICOS 🚀
- * Core Logic & Interactive Educational Engines
- * Dedicated to Cadete Juanpi (8 years old)
+ * NIVEL 2: INTERACCIÓN Y SENTIDOS ROBÓTICOS 🛰️
+ * Core JavaScript Interaction & Educational Engines
+ * Customized for Cadete Juanpi (8 years old)
  */
 
 // ==========================================================================
@@ -10,27 +10,35 @@
 const state = {
     currentSection: 'intro',
     childName: 'Juanpi',
-    drawingSaved: null,
-    uploadedPhoto: null,
+    roverActive: false,
     
-    // Phase 2 Hardware states
-    motorSpeed: 0,
-    spheroExpressionIndex: 0,
-    asteroidDistance: 300,
-    sensorBeepInterval: null,
+    // Module 1 Gear Puzzle
+    gearsPlaced: {
+        'slot-1': null, // expects 'small'
+        'slot-2': null, // expects 'medium'
+        'slot-3': null  // expects 'large'
+    },
+    gearSpinning: false,
     
-    // Phase 3 Workspace coding blocks sequence
-    codingSequence: [],
-    simRunning: false,
-    simTimeout: null,
+    // Module 2 Sensor state
+    sonarActive: false,
+    sonarBeepInterval: null,
+    sonarMeteorX: 250,
+    spectrometerColor: 'black',
     
-    // Phase 4 Project states
-    soccerLeverPower: 0,
-    soccerPowerCharging: false,
-    soccerPowerInterval: null,
+    // Module 3 VR Coding Laberinto
+    vrSequence: [],
+    vrSimRunning: false,
+    vrRobotX: 50,
+    vrRobotY: 80,
+    vrRobotAngle: 0, // 0=Right, 90=Down, 180=Left, 270=Up
+    vrGoalX: 300,
+    vrGoalY: 250,
+    vrRockX: 200,
+    vrRockY: 80,
 };
 
-// Advanced Web Audio API Space Sound Synthesizer
+// Web Audio API Space Sound Synthesizer
 const SpaceSynth = {
     ctx: null,
     
@@ -63,11 +71,11 @@ const SpaceSynth = {
     
     playSuccess() {
         this.init();
-        const notes = [261.63, 329.63, 392.00, 523.25, 659.25, 783.99, 1046.50]; // Bright ascending arpeggio C major
+        const notes = [261.63, 329.63, 392.00, 523.25, 659.25, 783.99, 1046.50]; // Ascending C major arpeggio
         const now = this.ctx.currentTime;
         
         notes.forEach((freq, idx) => {
-            const time = now + idx * 0.08;
+            const time = now + idx * 0.07;
             const osc = this.ctx.createOscillator();
             const gain = this.ctx.createGain();
             
@@ -92,7 +100,7 @@ const SpaceSynth = {
         const gain = this.ctx.createGain();
         
         osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(450, now);
+        osc.frequency.setValueAtTime(400, now);
         osc.frequency.exponentialRampToValueAtTime(80, now + 0.25);
         
         gain.gain.setValueAtTime(0.15, now);
@@ -112,17 +120,17 @@ const SpaceSynth = {
         const gain = this.ctx.createGain();
         
         osc.type = 'sine';
-        osc.frequency.setValueAtTime(1500, now);
-        osc.frequency.exponentialRampToValueAtTime(300, now + 0.15);
+        osc.frequency.setValueAtTime(1600, now);
+        osc.frequency.exponentialRampToValueAtTime(400, now + 0.12);
         
         gain.gain.setValueAtTime(0.1, now);
-        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.12);
         
         osc.connect(gain);
         gain.connect(this.ctx.destination);
         
         osc.start();
-        osc.stop(now + 0.15);
+        osc.stop(now + 0.12);
     },
     
     playStatic(duration = 0.5) {
@@ -140,8 +148,8 @@ const SpaceSynth = {
         
         const filter = this.ctx.createBiquadFilter();
         filter.type = 'bandpass';
-        filter.frequency.value = 1000;
-        filter.Q.value = 2;
+        filter.frequency.value = 1100;
+        filter.Q.value = 2.5;
         
         const gain = this.ctx.createGain();
         gain.gain.setValueAtTime(0.08, this.ctx.currentTime);
@@ -154,53 +162,37 @@ const SpaceSynth = {
         noise.start();
     },
     
-    playMotorHum(speed) {
+    playGearHum(speed = 1) {
         this.init();
-        if (speed === 0) return;
-        
         const osc = this.ctx.createOscillator();
         const gain = this.ctx.createGain();
         
         osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(45 + speed * 15, this.ctx.currentTime); // Low engine pitch
+        osc.frequency.setValueAtTime(75 * speed, this.ctx.currentTime);
         
         const lp = this.ctx.createBiquadFilter();
         lp.type = 'lowpass';
-        lp.frequency.value = 120;
+        lp.frequency.value = 160;
         
-        gain.gain.setValueAtTime(0.08, this.ctx.currentTime);
-        gain.gain.setValueAtTime(0.08, this.ctx.currentTime + 0.4);
-        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.5);
+        gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.6);
         
         osc.connect(lp);
         lp.connect(gain);
         gain.connect(this.ctx.destination);
         
         osc.start();
-        osc.stop(this.ctx.currentTime + 0.5);
+        osc.stop(this.ctx.currentTime + 0.6);
     },
     
-    playAlarmSirena(active) {
-        if (!active) return;
+    playColorBeep(color) {
         this.init();
-        const now = this.ctx.currentTime;
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
+        let freq = 400;
+        if (color === 'red') freq = 880;
+        else if (color === 'blue') freq = 660;
+        else if (color === 'black') freq = 330;
         
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(500, now);
-        osc.frequency.linearRampToValueAtTime(800, now + 0.2);
-        osc.frequency.linearRampToValueAtTime(500, now + 0.4);
-        
-        gain.gain.setValueAtTime(0.08, now);
-        gain.gain.linearRampToValueAtTime(0.08, now + 0.3);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
-        
-        osc.connect(gain);
-        gain.connect(this.ctx.destination);
-        
-        osc.start();
-        osc.stop(now + 0.4);
+        this.playBeep(freq, 0.15, color === 'black' ? 'triangle' : 'sine');
     }
 };
 
@@ -227,12 +219,9 @@ const initNavigation = () => {
                 state.currentSection = target;
                 
                 // Initialize specific views on activate
-                if (target === 'fase1') {
-                    resizeCanvas();
-                } else if (target === 'fase3') {
-                    initMarsSim();
-                } else if (target === 'fase4') {
-                    initPhysicsKicker();
+                if (target === 'mod3') {
+                    initVRLaberinto();
+                } else if (target === 'diploma') {
                     initCertificatePreview();
                 }
             }
@@ -241,492 +230,409 @@ const initNavigation = () => {
 };
 
 // ==========================================================================
-// 3. VOICE ENGINE: MISSION NARRATOR (Web Speech Synthesis)
+// 3. INTRO: WAKING ROVER ("¡TU ROBOT DESPIERTA!")
 // ==========================================================================
-const initVoiceCommander = () => {
-    const listenBtn = document.getElementById('btn-listen-msg');
-    const waveEl = document.getElementById('audio-wave');
+const initIntroWakeUp = () => {
+    const actBtn = document.getElementById('btn-activate-rover');
+    const roverModel = document.getElementById('rover-model');
+    const statusText = document.getElementById('activation-status');
+    const ecgWave = document.getElementById('ecg-wave');
     
-    listenBtn.addEventListener('click', () => {
-        listenBtn.blur();
-        SpaceSynth.playStatic(0.8);
+    actBtn.addEventListener('click', () => {
+        actBtn.blur();
+        SpaceSynth.playStatic(0.6);
         
-        // Timeout to simulate radio-static crackle before commander speaks
         setTimeout(() => {
-            if ('speechSynthesis' in window) {
-                // Cancel existing speech
-                window.speechSynthesis.cancel();
+            if (!state.roverActive) {
+                state.roverActive = true;
                 
-                const welcomeText = `¡Hola, ${state.childName}! La NASA está explorando lo desconocido en el espacio y necesita tu ayuda para construir los exploradores del futuro. Los robots son máquinas increíbles que pueden hacer tareas muy peligrosas o repetitivas por nosotros, ¡como caminar sobre la Luna o Marte! ¡Misión unete a mi flota espacial!`;
+                // Wake up visuals
+                roverModel.classList.add('active');
+                ecgWave.classList.add('playing');
+                statusText.textContent = "🚀 ¡Explorador Despierto y Conectado!";
+                statusText.style.color = "var(--cyan-glow)";
+                statusText.style.textShadow = "0 0 10px var(--cyan-glow)";
                 
-                const utterance = new SpeechSynthesisUtterance(welcomeText);
-                utterance.lang = 'es-ES';
-                utterance.rate = 0.95; // Slightly slower, highly friendly
-                utterance.pitch = 1.0;  // Standard tone
+                actBtn.innerHTML = '<i class="fa-solid fa-circle-check"></i> SISTEMAS ONLINE';
+                actBtn.style.background = 'linear-gradient(135deg, var(--green-glow) 0%, #00aa22 100%)';
+                actBtn.style.boxShadow = 'var(--shadow-green)';
                 
-                // Fetch Spanish voices if loaded
-                const voices = window.speechSynthesis.getVoices();
-                const preferredVoice = voices.find(v => v.lang.startsWith('es') && (v.name.includes('Google') || v.name.includes('Microsoft')));
-                if (preferredVoice) {
-                    utterance.voice = preferredVoice;
+                SpaceSynth.playSuccess();
+                
+                // Welcome commander voice synthesis
+                if ('speechSynthesis' in window) {
+                    window.speechSynthesis.cancel();
+                    
+                    const msg = `¡Felicidades, Comandante ${state.childName}! Tu robot ya tiene cuerpo y cerebro. Hemos activado con éxito los sistemas de a bordo. ¡Es hora de hacerlo inteligente!`;
+                    const utterance = new SpeechSynthesisUtterance(msg);
+                    utterance.lang = 'es-ES';
+                    utterance.rate = 0.95;
+                    utterance.pitch = 1.0;
+                    
+                    window.speechSynthesis.speak(utterance);
                 }
-                
-                utterance.onstart = () => {
-                    waveEl.classList.add('playing');
-                };
-                
-                utterance.onend = () => {
-                    waveEl.classList.remove('playing');
-                };
-                
-                utterance.onerror = () => {
-                    waveEl.classList.remove('playing');
-                };
-                
-                window.speechSynthesis.speak(utterance);
             } else {
-                alert("La voz robótica no es compatible con este navegador, ¡pero puedes leer los mensajes de la misión!");
+                // Toggle off
+                state.roverActive = false;
+                roverModel.classList.remove('active');
+                ecgWave.classList.remove('playing');
+                statusText.textContent = "Rover en hibernación... ZzZ";
+                statusText.removeAttribute('style');
+                
+                actBtn.innerHTML = '<i class="fa-solid fa-power-off"></i> ¡ACTIVAR SISTEMAS!';
+                actBtn.style.background = '';
+                actBtn.style.boxShadow = '';
+                
+                SpaceSynth.playError();
             }
         }, 600);
     });
 };
 
 // ==========================================================================
-// 4. FASE 1: DRAWING BLUEPRINT BOARD (Blueprint Paint Canvas)
+// 4. MÓDULO 1: GEAR PUZZLE & SLOPE CLIMB
 // ==========================================================================
-let paintCanvas, paintCtx;
-let isDrawing = false;
-let drawColor = '#00f3ff';
-let drawSize = 5;
-let drawTool = 'pencil'; // pencil, brush, eraser
+let draggedGearSize = null;
+let draggedGearId = null;
 
-const initDrawingBoard = () => {
-    paintCanvas = document.getElementById('blueprint-canvas');
-    paintCtx = paintCanvas.getContext('2d');
+const initGearPuzzle = () => {
+    const gearItems = document.querySelectorAll('.gear-drag-item');
+    const slots = document.querySelectorAll('.gear-axis-slot');
+    const testBtn = document.getElementById('btn-test-gears');
+    const resetBtn = document.getElementById('btn-reset-gears');
+    const feedback = document.getElementById('gear-puzzle-feedback');
     
-    // Set line endings
-    paintCtx.lineCap = 'round';
-    paintCtx.lineJoin = 'round';
-    
-    // Touch & Mouse Listeners
-    paintCanvas.addEventListener('mousedown', startPaint);
-    paintCanvas.addEventListener('mousemove', drawPaint);
-    paintCanvas.addEventListener('mouseup', stopPaint);
-    paintCanvas.addEventListener('mouseleave', stopPaint);
-    
-    paintCanvas.addEventListener('touchstart', (e) => {
-        e.preventDefault();
-        const touch = e.touches[0];
-        const rect = paintCanvas.getBoundingClientRect();
-        startPaint({
-            clientX: touch.clientX,
-            clientY: touch.clientY
-        });
-    });
-    
-    paintCanvas.addEventListener('touchmove', (e) => {
-        e.preventDefault();
-        const touch = e.touches[0];
-        drawPaint({
-            clientX: touch.clientX,
-            clientY: touch.clientY
-        });
-    });
-    
-    paintCanvas.addEventListener('touchend', stopPaint);
-    
-    // Tool buttons select
-    document.querySelectorAll('.color-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            drawColor = btn.getAttribute('data-color');
-            if (drawTool === 'eraser') {
-                drawTool = 'pencil';
-                document.getElementById('tool-pencil').classList.add('active');
-                document.getElementById('tool-eraser').classList.remove('active');
-            }
+    // Drag events
+    gearItems.forEach(item => {
+        item.addEventListener('dragstart', (e) => {
+            draggedGearSize = item.getAttribute('data-size');
+            draggedGearId = item.id;
+            item.classList.add('dragging');
             SpaceSynth.playBeep(600, 0.05);
         });
+        
+        item.addEventListener('dragend', () => {
+            item.classList.remove('dragging');
+        });
     });
     
-    const setTool = (tool, btnId) => {
-        document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById(btnId).classList.add('active');
-        drawTool = tool;
-        SpaceSynth.playBeep(600, 0.05);
+    slots.forEach(slot => {
+        slot.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            if (!state.gearsPlaced[slot.id]) {
+                slot.classList.add('dragover');
+            }
+        });
+        
+        slot.addEventListener('dragleave', () => {
+            slot.classList.remove('dragover');
+        });
+        
+        slot.addEventListener('drop', (e) => {
+            e.preventDefault();
+            slot.classList.remove('dragover');
+            
+            const expectedSize = slot.getAttribute('data-expected');
+            
+            if (state.gearsPlaced[slot.id]) return; // slot occupied
+            
+            if (draggedGearSize === expectedSize) {
+                // Correct match! Place gear
+                state.gearsPlaced[slot.id] = draggedGearSize;
+                
+                // Render placed gear visual inside slot
+                const holder = slot.querySelector('.placed-gear-holder');
+                let gearColorClass = '';
+                if (draggedGearSize === 'small') gearColorClass = 'placed-small';
+                else if (draggedGearSize === 'medium') gearColorClass = 'placed-medium';
+                else if (draggedGearSize === 'large') gearColorClass = 'placed-large';
+                
+                holder.innerHTML = `<i class="fa-solid fa-gear placed-gear-cog ${gearColorClass}"></i>`;
+                
+                // Hide the source gear item from toolbox
+                document.getElementById(draggedGearId).style.visibility = 'hidden';
+                
+                SpaceSynth.playBeep(880, 0.08);
+                
+                // Check if all correct
+                checkGearPuzzleCompleted();
+            } else {
+                // Wrong gear
+                SpaceSynth.playError();
+                feedback.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Ese engranaje no encaja en este eje. ¡Cuidado con el tamaño!';
+                feedback.className = "puzzle-status-box critical";
+            }
+        });
+    });
+    
+    const checkGearPuzzleCompleted = () => {
+        const allCorrect = state.gearsPlaced['slot-1'] === 'small' &&
+                           state.gearsPlaced['slot-2'] === 'medium' &&
+                           state.gearsPlaced['slot-3'] === 'large';
+                           
+        if (allCorrect) {
+            testBtn.removeAttribute('disabled');
+            feedback.innerHTML = '<span><i class="fa-solid fa-circle-check"></i> ¡Sistemas acoplados con éxito! Pulsa Probar.</span>';
+            feedback.className = "puzzle-status-box success";
+            SpaceSynth.playSuccess();
+        } else {
+            testBtn.setAttribute('disabled', 'true');
+        }
     };
     
-    document.getElementById('tool-pencil').addEventListener('click', () => setTool('pencil', 'tool-pencil'));
-    document.getElementById('tool-brush').addEventListener('click', () => setTool('brush', 'tool-brush'));
-    document.getElementById('tool-eraser').addEventListener('click', () => setTool('eraser', 'tool-eraser'));
-    
-    // Brush size slider
-    const sizeSlider = document.getElementById('brush-size');
-    const sizeDisplay = document.getElementById('brush-size-val');
-    sizeSlider.addEventListener('input', (e) => {
-        drawSize = e.target.value;
-        sizeDisplay.textContent = `${drawSize}px`;
+    testBtn.addEventListener('click', () => {
+        if (state.gearSpinning) return;
+        state.gearSpinning = true;
+        
+        // Spin placed gear cogs using classes
+        document.querySelectorAll('.placed-gear-cog').forEach((cog, idx) => {
+            cog.classList.add('spinning');
+        });
+        
+        SpaceSynth.playGearHum(1);
+        setTimeout(() => SpaceSynth.playGearHum(1.5), 600);
+        setTimeout(() => SpaceSynth.playGearHum(2), 1200);
+        
+        // Climb rover animation
+        const miniRover = document.getElementById('mini-rover-body');
+        miniRover.style.transition = 'transform 3s cubic-bezier(0.25, 0.8, 0.25, 1)';
+        miniRover.style.transform = 'translate(190px, -80px) rotate(-22deg)';
+        
+        setTimeout(() => {
+            SpaceSynth.playSuccess();
+            triggerStarConfetti();
+            feedback.innerHTML = '<span><i class="fa-solid fa-flag-checkered"></i> ¡Excelente! Rover subió la pendiente marciana con máxima fuerza.</span>';
+            feedback.className = "puzzle-status-box success";
+        }, 3000);
     });
     
-    // Clear blueprint canvas
-    document.getElementById('paint-clear').addEventListener('click', () => {
-        if(confirm("¿Quieres borrar todo tu boceto para empezar de nuevo?")) {
-            paintCtx.clearRect(0, 0, paintCanvas.width, paintCanvas.height);
+    resetBtn.addEventListener('click', () => {
+        // Reset state
+        state.gearsPlaced = { 'slot-1': null, 'slot-2': null, 'slot-3': null };
+        state.gearSpinning = false;
+        
+        // Empty slots
+        document.querySelectorAll('.placed-gear-holder').forEach(el => el.innerHTML = '');
+        
+        // Restore toolbox items visibility
+        gearItems.forEach(item => item.style.visibility = 'visible');
+        
+        // Reset rover position
+        const miniRover = document.getElementById('mini-rover-body');
+        miniRover.style.transition = 'none';
+        miniRover.style.transform = 'none';
+        
+        testBtn.setAttribute('disabled', 'true');
+        feedback.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Conecta los engranajes en orden correcto.';
+        feedback.className = "puzzle-status-box";
+        
+        SpaceSynth.playError();
+    });
+};
+
+// ==========================================================================
+// 5. MÓDULO 2: SENSORS MODULE (ULTRASONIC & COLOR)
+// ==========================================================================
+const initSensorsModule = () => {
+    
+    // A. ULTRASONIC RADAR DRAG-AND-DROP METEOR
+    const meteor = document.getElementById('sonar-meteor');
+    const sonarContainer = meteor.parentElement;
+    const waves = document.getElementById('sonar-radar-waves');
+    const distVal = document.getElementById('sonar-distance-val');
+    const statusPill = document.getElementById('sonar-status-pill');
+    let isDraggingMeteor = false;
+    
+    meteor.addEventListener('mousedown', () => {
+        isDraggingMeteor = true;
+        meteor.style.cursor = 'grabbing';
+    });
+    
+    window.addEventListener('mouseup', () => {
+        isDraggingMeteor = false;
+        meteor.style.cursor = 'grab';
+    });
+    
+    sonarContainer.addEventListener('mousemove', (e) => {
+        if (!isDraggingMeteor) return;
+        
+        const rect = sonarContainer.getBoundingClientRect();
+        let posX = e.clientX - rect.left - 24; // center
+        
+        if (posX < 60) posX = 60;
+        if (posX > rect.width - 40) posX = rect.width - 40;
+        
+        meteor.style.left = `${posX}px`;
+        
+        // Distance math
+        const sensorX = 25;
+        const diffX = posX - sensorX;
+        const cmDistance = Math.round(diffX * 1.15); // map
+        
+        distVal.textContent = cmDistance;
+        
+        // Warning sound rate
+        clearInterval(state.sonarBeepInterval);
+        
+        if (cmDistance < 70) {
+            statusPill.textContent = "ALERTA COLISIÓN 🔴";
+            statusPill.className = "status-pill critical";
+            waves.style.filter = "hue-rotate(120deg) saturate(2.5)";
+            
+            state.sonarBeepInterval = setInterval(() => {
+                SpaceSynth.playBeep(950, 0.04, 'sawtooth');
+            }, 150);
+        } else if (cmDistance < 150) {
+            statusPill.textContent = "ADVERTENCIA 🟡";
+            statusPill.className = "status-pill warning";
+            waves.style.filter = "hue-rotate(50deg) saturate(1.8)";
+            
+            state.sonarBeepInterval = setInterval(() => {
+                SpaceSynth.playBeep(580, 0.07);
+            }, 450);
+        } else {
+            statusPill.textContent = "SEGURO 🟢";
+            statusPill.className = "status-pill safe";
+            waves.style.filter = "none";
+        }
+    });
+    
+    // Toggle Robot Radar Vision button
+    const toggleVisionBtn = document.getElementById('btn-toggle-vision');
+    const sweep = document.getElementById('radar-sweep');
+    
+    toggleVisionBtn.addEventListener('click', () => {
+        if (!state.sonarActive) {
+            state.sonarActive = true;
+            sweep.style.display = 'block';
+            toggleVisionBtn.innerHTML = '<i class="fa-solid fa-eye"></i> Visión Normal';
+            toggleVisionBtn.style.background = 'linear-gradient(135deg, var(--magenta-glow) 0%, #aa00aa 100%)';
+            SpaceSynth.playLaser();
+        } else {
+            state.sonarActive = false;
+            sweep.style.display = 'none';
+            toggleVisionBtn.innerHTML = '<i class="fa-solid fa-eye-low-vision"></i> Visión de Robot (Radar)';
+            toggleVisionBtn.style.background = '';
             SpaceSynth.playError();
         }
     });
     
-    // Save to Bitácora local storage
-    document.getElementById('paint-save').addEventListener('click', () => {
-        state.drawingSaved = paintCanvas.toDataURL();
-        SpaceSynth.playSuccess();
-        alert("🚀 ¡Plano guardado con éxito en tu bitácora estelar!");
-        initCertificatePreview();
-    });
+    // B. SPECTROMETER COLOR SCANNER
+    const colorSelectors = document.querySelectorAll('.btn-mineral-selector');
+    const laserBeam = document.getElementById('scanner-laser-beam');
+    const laserLed = document.getElementById('scanner-laser-led');
+    const rock = document.getElementById('target-mineral-soil');
+    const readingVal = document.getElementById('color-sensor-val');
+    const commentVal = document.getElementById('color-sensor-action');
     
-    // PNG Blueprint download
-    document.getElementById('paint-download').addEventListener('click', () => {
-        const link = document.createElement('a');
-        link.download = `plano_robot_${state.childName}.png`;
-        link.href = paintCanvas.toDataURL();
-        link.click();
-        SpaceSynth.playBeep(900, 0.1);
-    });
-};
-
-const resizeCanvas = () => {
-    // Only adjust visually. Since it's fixed 700x450 internally, scale handles are responsive.
-};
-
-const startPaint = (e) => {
-    isDrawing = true;
-    const rect = paintCanvas.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width) * paintCanvas.width;
-    const y = ((e.clientY - rect.top) / rect.height) * paintCanvas.height;
-    
-    paintCtx.beginPath();
-    paintCtx.moveTo(x, y);
-    SpaceSynth.playBeep(200, 0.02, 'triangle');
-};
-
-const drawPaint = (e) => {
-    if (!isDrawing) return;
-    const rect = paintCanvas.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width) * paintCanvas.width;
-    const y = ((e.clientY - rect.top) / rect.height) * paintCanvas.height;
-    
-    paintCtx.lineTo(x, y);
-    
-    if (drawTool === 'eraser') {
-        paintCtx.strokeStyle = '#07071e';
-        paintCtx.lineWidth = drawSize * 1.5;
-        paintCtx.shadowBlur = 0;
-    } else {
-        paintCtx.strokeStyle = drawColor;
-        paintCtx.lineWidth = drawSize;
-        
-        if (drawTool === 'brush') {
-            paintCtx.shadowColor = drawColor;
-            paintCtx.shadowBlur = 8;
-        } else {
-            paintCtx.shadowBlur = 0; // crisp thin pencil
-        }
-    }
-    
-    paintCtx.stroke();
-};
-
-const stopPaint = () => {
-    isDrawing = false;
-};
-
-// ==========================================================================
-// 5. FASE 2: HARDWARE TOYS & PROXIMITY SENSOR
-// ==========================================================================
-const initHardwareToys = () => {
-    
-    // A. MOTOR WE DO SPEED ADJUSTER
-    const speedButtons = document.querySelectorAll('.btn-speed');
-    const gear1 = document.getElementById('motor-gear-1');
-    const gear2 = document.getElementById('motor-gear-2');
-    
-    speedButtons.forEach(btn => {
+    colorSelectors.forEach(btn => {
         btn.addEventListener('click', () => {
-            speedButtons.forEach(b => b.classList.remove('active'));
+            colorSelectors.forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             
-            const speed = parseInt(btn.getAttribute('data-speed'));
-            state.motorSpeed = speed;
+            const color = btn.getAttribute('data-color');
+            state.spectrometerColor = color;
             
-            // Adjust spin speeds in CSS
-            if (speed === 0) {
-                gear1.style.animationDuration = '0s';
-                gear2.style.animationDuration = '0s';
-            } else if (speed === 1) {
-                gear1.style.animationDuration = '3s';
-                gear2.style.animationDuration = '3s';
-            } else if (speed === 3) {
-                gear1.style.animationDuration = '0.5s';
-                gear2.style.animationDuration = '0.5s';
-            }
+            SpaceSynth.playColorBeep(color);
             
-            SpaceSynth.playMotorHum(speed);
-        });
-    });
-    
-    // B. SPHERO BOLT LED MATRIX
-    const matrixContainer = document.getElementById('led-matrix');
-    
-    // Render 8x8 pixel dots
-    for (let r = 0; r < 8; r++) {
-        for (let c = 0; c < 8; c++) {
-            const pixel = document.createElement('div');
-            pixel.className = 'led-pixel';
-            pixel.setAttribute('data-row', r);
-            pixel.setAttribute('data-col', c);
-            matrixContainer.appendChild(pixel);
-        }
-    }
-    
-    // Led expressions definitions
-    const expressions = [
-        // 😄 SMILE
-        [
-            "00111100",
-            "01000010",
-            "10100101",
-            "10000001",
-            "10100101",
-            "10011001",
-            "01000010",
-            "00111100"
-        ],
-        // ❤️ HEART
-        [
-            "01100110",
-            "11111111",
-            "11111111",
-            "01111110",
-            "00111100",
-            "00011000",
-            "00000000",
-            "00000000"
-        ],
-        // 😮 SURPRISE
-        [
-            "00111100",
-            "01000010",
-            "10100101",
-            "10000001",
-            "10011001",
-            "10100101",
-            "01011010",
-            "00111100"
-        ],
-        // 🤖 ROBOT
-        [
-            "11111111",
-            "10100101",
-            "11111111",
-            "01111110",
-            "01011010",
-            "01111110",
-            "10000001",
-            "11111111"
-        ],
-        // 😉 WINK
-        [
-            "00111100",
-            "01000010",
-            "10100111",
-            "10000001",
-            "10100101",
-            "10011001",
-            "01000010",
-            "00111100"
-        ]
-    ];
-    
-    const drawExpression = (exprArray) => {
-        const pixels = matrixContainer.querySelectorAll('.led-pixel');
-        pixels.forEach(p => p.classList.remove('active'));
-        
-        exprArray.forEach((rowStr, rIdx) => {
-            for (let cIdx = 0; cIdx < 8; cIdx++) {
-                if (rowStr[cIdx] === '1') {
-                    const pIndex = rIdx * 8 + cIdx;
-                    pixels[pIndex].classList.add('active');
-                }
+            // Adjust laser visual colors
+            if (color === 'black') {
+                laserBeam.style.background = 'rgba(0, 243, 255, 0.15)';
+                laserLed.style.background = 'var(--cyan-glow)';
+                rock.style.color = '#555';
+                rock.style.filter = 'none';
+                readingVal.textContent = "Camino Negro";
+                readingVal.style.color = "var(--cyan-glow)";
+                commentVal.textContent = '"Siguiendo ruta segura"';
+            } else if (color === 'red') {
+                laserBeam.style.background = 'rgba(255, 0, 50, 0.6)';
+                laserLed.style.background = 'red';
+                rock.style.color = '#ff3355';
+                rock.style.filter = 'drop-shadow(0 0 15px #ff3355)';
+                readingVal.textContent = "Mineral Rojo (Hierro)";
+                readingVal.style.color = "red";
+                commentVal.textContent = '"⚡ ¡Hierro detectado! Material útil."';
+            } else if (color === 'blue') {
+                laserBeam.style.background = 'rgba(0, 119, 255, 0.6)';
+                laserLed.style.background = 'var(--cyan-glow)';
+                rock.style.color = '#00bbff';
+                rock.style.filter = 'drop-shadow(0 0 15px #00bbff)';
+                readingVal.textContent = "Mineral Azul (Hielo)";
+                readingVal.style.color = "var(--cyan-glow)";
+                commentVal.textContent = '"❄️ ¡Hielo de agua descubierto! Recurso vital."';
             }
         });
-    };
-    
-    // Draw default smile
-    drawExpression(expressions[0]);
-    
-    document.getElementById('btn-bolt-mood').addEventListener('click', () => {
-        state.spheroExpressionIndex = (state.spheroExpressionIndex + 1) % expressions.length;
-        drawExpression(expressions[state.spheroExpressionIndex]);
-        SpaceSynth.playBeep(880, 0.06);
-    });
-    
-    const orb = document.getElementById('sphero-bolt-orb');
-    document.getElementById('btn-bolt-gyro').addEventListener('click', () => {
-        orb.style.transition = 'transform 1.2s cubic-bezier(0.25, 0.8, 0.25, 1)';
-        orb.style.transform = 'rotateZ(360deg)';
-        SpaceSynth.playLaser();
-        
-        setTimeout(() => {
-            orb.style.transition = 'none';
-            orb.style.transform = 'rotateZ(0deg)';
-        }, 1250);
-    });
-    
-    // C. DRAGGABLE ULTRASONIC RANGE RADAR
-    const asteroid = document.getElementById('draggable-asteroid');
-    const sensorSim = asteroid.parentElement;
-    const waves = document.getElementById('radar-waves');
-    const distText = document.getElementById('sensor-distance');
-    const statusText = document.getElementById('sensor-status');
-    let isDraggingAsteroid = false;
-    
-    asteroid.addEventListener('mousedown', () => {
-        isDraggingAsteroid = true;
-        asteroid.style.cursor = 'grabbing';
-    });
-    
-    window.addEventListener('mouseup', () => {
-        isDraggingAsteroid = false;
-        asteroid.style.cursor = 'grab';
-    });
-    
-    sensorSim.addEventListener('mousemove', (e) => {
-        if (!isDraggingAsteroid) return;
-        
-        const rect = sensorSim.getBoundingClientRect();
-        let posX = e.clientX - rect.left - 32; // Half asteroid size
-        
-        // Boundary check (keep on right side of simulator box)
-        if (posX < 80) posX = 80;
-        if (posX > rect.width - 70) posX = rect.width - 70;
-        
-        asteroid.style.right = 'auto';
-        asteroid.style.left = `${posX}px`;
-        
-        // Calculate dynamic proximity distance
-        const sensorX = 52; // Sensor centers
-        const diffX = posX - sensorX;
-        const rawDistance = Math.round(diffX * 1.25); // map scale to 10-350 cm
-        state.asteroidDistance = rawDistance;
-        
-        distText.textContent = rawDistance;
-        
-        // Proximity audio feedback speed controller
-        clearInterval(state.sensorBeepInterval);
-        
-        if (rawDistance < 80) {
-            statusText.textContent = "CRÍTICO 🔴 - ¡Colisión inminente!";
-            statusText.className = "alert-status critical";
-            waves.style.filter = 'hue-rotate(120deg) saturate(3)'; // turn warning red
-            
-            // Fast siren alarm beeps
-            state.sensorBeepInterval = setInterval(() => {
-                SpaceSynth.playBeep(980, 0.05, 'sawtooth');
-            }, 180);
-        } else if (rawDistance < 180) {
-            statusText.textContent = "ADVERTENCIA 🟡 - Cuidado";
-            statusText.className = "alert-status";
-            statusText.style.color = 'var(--orange-glow)';
-            statusText.style.textShadow = '0 0 5px var(--orange-glow)';
-            waves.style.filter = 'hue-rotate(60deg) saturate(2)'; // turn orange
-            
-            // Moderate warning clicks
-            state.sensorBeepInterval = setInterval(() => {
-                SpaceSynth.playBeep(520, 0.08);
-            }, 500);
-        } else {
-            statusText.textContent = "SEGURO 🟢";
-            statusText.className = "alert-status";
-            statusText.removeAttribute('style');
-            waves.style.filter = 'none'; // cyan
-        }
     });
 };
 
 // ==========================================================================
-// 6. FASE 3: MARS BLOCK PROGRAMMING IDE SIMULATOR
+// 6. MÓDULO 3: PROGRAMACIÓN INTELIGENTE (VR LABERINTO COMPILER)
 // ==========================================================================
-let marsCanvas, marsCtx;
-let robotSimX = 50;
-let simProgress = 0.0;
-const challengeSequence = ['mover', 'esperar', 'detectar', 'detener'];
+let vrCanvas, vrCtx;
+let vrAnimationInterval = null;
 
-const initMarsSim = () => {
-    marsCanvas = document.getElementById('mars-sim-canvas');
-    marsCtx = marsCanvas.getContext('2d');
+const initVRLaberinto = () => {
+    vrCanvas = document.getElementById('vr-maze-canvas');
+    vrCtx = vrCanvas.getContext('2d');
     
-    // Draw initial idle Mars canvas state
-    drawMarsSimulation(robotSimX, false);
+    // Draw initial static VR map state
+    drawVRSimulationFrame();
     
-    // Block Palette Click to Add Handlers
-    document.querySelectorAll('.palette-container .code-block').forEach(block => {
-        block.onclick = () => {
-            const blockType = block.getAttribute('data-block-type');
-            addBlockToWorkspace(blockType, block.innerHTML);
-            SpaceSynth.playBeep(700, 0.04);
-        };
-    });
+    // Palette clicks to add blocks
+    document.getElementById('pal-avanzar').onclick = () => addBlockToVRWorkspace('avanzar', '<i class="fa-solid fa-circle-arrow-right"></i> Avanzar 1 Paso');
+    document.getElementById('pal-si-roca').onclick = () => addBlockToVRWorkspace('si-roca', '<i class="fa-solid fa-diamond-turn-right"></i> SI hay roca ➡️ Girar Derecha');
+    document.getElementById('pal-girar-izq').onclick = () => addBlockToVRWorkspace('girar-izq', '<i class="fa-solid fa-rotate-left"></i> Girar Izquierda');
+    document.getElementById('pal-detener').onclick = () => addBlockToVRWorkspace('detener-meta', '<i class="fa-solid fa-flag-checkered"></i> SI en meta 🛑 Detener');
     
-    document.getElementById('workspace-clear').onclick = () => {
-        state.codingSequence = [];
-        renderWorkspaceBlocks();
-        resetMarsSim();
+    document.getElementById('btn-clear-vr-workspace').onclick = () => {
+        state.vrSequence = [];
+        renderVRWorkspaceBlocks();
+        resetVRSim();
         SpaceSynth.playError();
     };
     
-    document.getElementById('btn-run-simulation').onclick = runMarsProgram;
-    document.getElementById('btn-reset-simulation').onclick = resetMarsSim;
+    document.getElementById('btn-run-vr').onclick = runVRProgram;
+    document.getElementById('btn-reset-vr').onclick = resetVRSim;
 };
 
-const addBlockToWorkspace = (type, innerHTML) => {
-    state.codingSequence.push({
-        id: 'block-' + Date.now() + Math.random().toString(36).substr(2, 4),
+const addBlockToVRWorkspace = (type, html) => {
+    state.vrSequence.push({
+        id: 'vr-' + Date.now() + Math.random().toString(36).substr(2, 4),
         type: type,
-        html: innerHTML
+        html: html
     });
-    renderWorkspaceBlocks();
+    renderVRWorkspaceBlocks();
+    SpaceSynth.playBeep(700, 0.04);
 };
 
-const renderWorkspaceBlocks = () => {
-    const ws = document.getElementById('blocks-workspace');
-    const emptyMsg = document.getElementById('workspace-empty');
+const renderVRWorkspaceBlocks = () => {
+    const ws = document.getElementById('vr-blocks-workspace');
+    const emptyMsg = document.getElementById('vr-workspace-empty');
     
-    // Remove old block items
     ws.querySelectorAll('.workspace-block-wrapper').forEach(el => el.remove());
     
-    if (state.codingSequence.length === 0) {
+    if (state.vrSequence.length === 0) {
         emptyMsg.style.display = 'flex';
         return;
     }
     
     emptyMsg.style.display = 'none';
     
-    state.codingSequence.forEach((block, idx) => {
+    state.vrSequence.forEach((block, idx) => {
         const wrapper = document.createElement('div');
         wrapper.className = 'workspace-block-wrapper';
         wrapper.setAttribute('data-id', block.id);
         
         let blockClass = '';
-        if (block.type === 'mover') blockClass = 'block-move';
-        else if (block.type === 'esperar') blockClass = 'block-wait';
-        else if (block.type === 'detectar') blockClass = 'block-sensor';
-        else if (block.type === 'detener') blockClass = 'block-stop';
+        if (block.type === 'avanzar') blockClass = 'block-move';
+        else if (block.type === 'si-roca') blockClass = 'block-sensor';
+        else if (block.type === 'girar-izq') blockClass = 'block-wait';
+        else if (block.type === 'detener-meta') blockClass = 'block-stop';
         
         wrapper.innerHTML = `
             <div class="code-block ${blockClass}">
                 ${block.html}
-                <button class="btn-block-delete" onclick="removeWorkspaceBlock('${block.id}')">
+                <button class="btn-block-delete" onclick="removeVRWorkspaceBlock('${block.id}')">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
@@ -735,594 +641,338 @@ const renderWorkspaceBlocks = () => {
     });
 };
 
-// Global scope binder to handle dynamic onclick element deletions
-window.removeWorkspaceBlock = (id) => {
-    state.codingSequence = state.codingSequence.filter(b => b.id !== id);
-    renderWorkspaceBlocks();
+window.removeVRWorkspaceBlock = (id) => {
+    state.vrSequence = state.vrSequence.filter(b => b.id !== id);
+    renderVRWorkspaceBlocks();
     SpaceSynth.playBeep(300, 0.05);
 };
 
-const drawMarsSimulation = (robotX, isScanning = false, scanDist = 0, timerVal = "0.0s") => {
-    // Clear sim frame
-    marsCtx.clearRect(0, 0, marsCanvas.width, marsCanvas.height);
+const drawVRSimulationFrame = (isScanning = false) => {
+    vrCtx.clearRect(0, 0, vrCanvas.width, vrCanvas.height);
     
-    // Draw Mars orange atmosphere gradient background
-    const bgGrad = marsCtx.createLinearGradient(0, 0, 0, marsCanvas.height);
-    bgGrad.addColorStop(0, '#1c0704');
-    bgGrad.addColorStop(0.5, '#40150b');
-    bgGrad.addColorStop(1, '#852b16');
-    marsCtx.fillStyle = bgGrad;
-    marsCtx.fillRect(0, 0, marsCanvas.width, marsCanvas.height);
+    // Draw sci-fi green radar-grid maze map
+    vrCtx.fillStyle = '#060517';
+    vrCtx.fillRect(0, 0, vrCanvas.width, vrCanvas.height);
     
-    // Draw tiny stars
-    marsCtx.fillStyle = '#fff';
-    marsCtx.fillRect(80, 40, 2, 2);
-    marsCtx.fillRect(200, 80, 1.5, 1.5);
-    marsCtx.fillRect(350, 50, 2, 2);
-    marsCtx.fillRect(20, 100, 1, 1);
-    
-    // Draw dusty Mars Ground surface
-    marsCtx.fillStyle = '#b84428';
-    marsCtx.beginPath();
-    marsCtx.moveTo(0, 280);
-    marsCtx.lineTo(290, 280);
-    
-    // Draw Crater outline curves on right side
-    marsCtx.bezierCurveTo(310, 310, 360, 310, 380, 280);
-    marsCtx.lineTo(marsCanvas.width, 280);
-    marsCtx.lineTo(marsCanvas.width, marsCanvas.height);
-    marsCtx.lineTo(0, marsCanvas.height);
-    marsCtx.closePath();
-    marsCtx.fill();
-    
-    // Draw lava glow inside crater
-    marsCtx.fillStyle = '#ff3300';
-    marsCtx.beginPath();
-    marsCtx.ellipse(335, 290, 30, 8, 0, 0, 2 * Math.PI);
-    marsCtx.fill();
-    
-    // Draw rocky planet surface mountains details
-    marsCtx.fillStyle = '#6e2717';
-    marsCtx.beginPath();
-    marsCtx.moveTo(0, 280);
-    marsCtx.lineTo(30, 260);
-    marsCtx.lineTo(70, 280);
-    marsCtx.fill();
-    
-    marsCtx.beginPath();
-    marsCtx.moveTo(220, 280);
-    marsCtx.lineTo(250, 255);
-    marsCtx.lineTo(280, 280);
-    marsCtx.fill();
-    
-    // Draw NASA Crater caution signpost
-    marsCtx.fillStyle = '#ff7700';
-    marsCtx.fillRect(285, 220, 3, 60);
-    marsCtx.beginPath();
-    marsCtx.moveTo(270, 220);
-    marsCtx.lineTo(303, 220);
-    marsCtx.lineTo(286, 195);
-    marsCtx.closePath();
-    marsCtx.fill();
-    marsCtx.fillStyle = '#000';
-    marsCtx.font = "bold 10px Outfit";
-    marsCtx.fillText("!", 284, 215);
-    
-    // Draw Laser scanner beams if code is scanning
-    if (isScanning) {
-        marsCtx.strokeStyle = 'rgba(57, 255, 20, 0.8)';
-        marsCtx.lineWidth = 3;
-        marsCtx.shadowColor = '#39ff14';
-        marsCtx.shadowBlur = 10;
-        marsCtx.beginPath();
-        marsCtx.moveTo(robotX + 45, 248); // Sensor position
-        marsCtx.lineTo(315, 290); // Laser hits crater wall
-        marsCtx.stroke();
-        marsCtx.shadowBlur = 0; // reset
+    // Grid coordinate lines
+    vrCtx.strokeStyle = 'rgba(0, 243, 255, 0.06)';
+    vrCtx.lineWidth = 1;
+    for (let i = 0; i <= vrCanvas.width; i += 35) {
+        vrCtx.beginPath();
+        vrCtx.moveTo(i, 0);
+        vrCtx.lineTo(i, vrCanvas.height);
+        vrCtx.stroke();
+        
+        vrCtx.beginPath();
+        vrCtx.moveTo(0, i);
+        vrCtx.lineTo(vrCanvas.width, i);
+        vrCtx.stroke();
     }
     
-    // Draw NASA cute space robot
-    drawSpaceRobot(robotX, 230);
+    // Outer border walls
+    vrCtx.strokeStyle = 'rgba(0, 243, 255, 0.3)';
+    vrCtx.lineWidth = 4;
+    vrCtx.strokeRect(5, 5, vrCanvas.width - 10, vrCanvas.height - 10);
+    
+    // Draw obstacle Rock wall
+    vrCtx.fillStyle = '#b52c10';
+    vrCtx.shadowColor = '#ff003c';
+    vrCtx.shadowBlur = 4;
+    vrCtx.beginPath();
+    vrCtx.arc(state.vrRockX, state.vrRockY, 20, 0, 2 * Math.PI);
+    vrCtx.fill();
+    vrCtx.shadowBlur = 0; // reset
+    
+    // Draw goal base circle landing pad
+    vrCtx.fillStyle = 'rgba(57, 255, 20, 0.15)';
+    ctxGlow(vrCtx, '#39ff14', 12);
+    vrCtx.beginPath();
+    vrCtx.arc(state.vrGoalX, state.vrGoalY, 26, 0, 2 * Math.PI);
+    vrCtx.fill();
+    ctxGlow(vrCtx, 'none', 0);
+    
+    vrCtx.strokeStyle = '#39ff14';
+    vrCtx.lineWidth = 2;
+    vrCtx.beginPath();
+    vrCtx.arc(state.vrGoalX, state.vrGoalY, 24, 0, 2 * Math.PI);
+    vrCtx.stroke();
+    
+    vrCtx.fillStyle = '#39ff14';
+    vrCtx.font = "bold 8px 'Space Grotesk'";
+    vrCtx.textAlign = 'center';
+    vrCtx.fillText("BASE 2", state.vrGoalX, state.vrGoalY + 3);
+    
+    // Draw Sonar laser scanners if actively checking conditions
+    if (isScanning) {
+        vrCtx.strokeStyle = 'rgba(0, 243, 255, 0.7)';
+        vrCtx.lineWidth = 2.5;
+        vrCtx.beginPath();
+        vrCtx.moveTo(state.vrRobotX, state.vrRobotY);
+        // sensor beam shoots in current angle direction
+        let sensorLX = state.vrRobotX + Math.cos(state.vrRobotAngle * Math.PI / 180) * 80;
+        let sensorLY = state.vrRobotY + Math.sin(state.vrRobotAngle * Math.PI / 180) * 80;
+        vrCtx.lineTo(sensorLX, sensorLY);
+        vrCtx.stroke();
+    }
+    
+    // Draw cute VR rover dot
+    drawVRRobotShape();
 };
 
-const drawSpaceRobot = (x, y) => {
-    // Body metal plates chassis
-    marsCtx.fillStyle = '#e5e7eb';
-    marsCtx.strokeStyle = '#9ca3af';
-    marsCtx.lineWidth = 2;
-    marsCtx.beginPath();
-    marsCtx.roundRect(x, y + 10, 48, 30, 8);
-    marsCtx.fill();
-    marsCtx.stroke();
-    
-    // NASA Blue sticker logo decal
-    marsCtx.fillStyle = '#1e3a8a';
-    marsCtx.beginPath();
-    marsCtx.arc(x + 24, y + 25, 6, 0, 2 * Math.PI);
-    marsCtx.fill();
-    marsCtx.fillStyle = '#fff';
-    marsCtx.font = "italic bold 6px 'Space Grotesk'";
-    marsCtx.fillText("NASA", x + 18, y + 27);
-    
-    // Robot neck connection
-    marsCtx.fillStyle = '#4b5563';
-    marsCtx.fillRect(x + 20, y + 4, 8, 8);
-    
-    // Robot visor eyes head
-    marsCtx.fillStyle = '#111827';
-    marsCtx.strokeStyle = '#00f3ff';
-    marsCtx.lineWidth = 1.5;
-    marsCtx.beginPath();
-    marsCtx.roundRect(x + 12, y - 6, 24, 12, 4);
-    marsCtx.fill();
-    marsCtx.stroke();
-    
-    // Cyan glow visor lens
-    marsCtx.fillStyle = '#00f3ff';
-    marsCtx.beginPath();
-    marsCtx.arc(x + 20, y, 3, 0, 2 * Math.PI);
-    marsCtx.arc(x + 28, y, 3, 0, 2 * Math.PI);
-    marsCtx.fill();
-    
-    // Spinner crawler wheels (CSS loops triggers gear rotation representation)
-    marsCtx.fillStyle = '#374151';
-    marsCtx.beginPath();
-    marsCtx.arc(x + 8, y + 40, 7, 0, 2 * Math.PI);
-    marsCtx.arc(x + 40, y + 40, 7, 0, 2 * Math.PI);
-    marsCtx.fill();
-    
-    marsCtx.fillStyle = '#f3f4f6';
-    marsCtx.beginPath();
-    marsCtx.arc(x + 8, y + 40, 3, 0, 2 * Math.PI);
-    marsCtx.arc(x + 40, y + 40, 3, 0, 2 * Math.PI);
-    marsCtx.fill();
+const ctxGlow = (c, color, blur) => {
+    if(color === 'none') {
+        c.shadowBlur = 0;
+    } else {
+        c.shadowBlur = blur;
+        c.shadowColor = color;
+    }
 };
 
-const runMarsProgram = () => {
-    if (state.codingSequence.length === 0) {
-        alert("🚨 ¡Tu consola de órdenes está vacía! Primero agrega bloques para programar tu robot.");
+const drawVRRobotShape = () => {
+    vrCtx.save();
+    vrCtx.translate(state.vrRobotX, state.vrRobotY);
+    // Rotate to match direction
+    vrCtx.rotate(state.vrRobotAngle * Math.PI / 180);
+    
+    // Chassis
+    vrCtx.fillStyle = '#e5e7eb';
+    vrCtx.strokeStyle = 'var(--cyan-glow)';
+    vrCtx.lineWidth = 1.5;
+    vrCtx.beginPath();
+    vrCtx.roundRect(-16, -12, 32, 24, 4);
+    vrCtx.fill();
+    vrCtx.stroke();
+    
+    // Direction visor eyes (glowing indicator pointing forward)
+    vrCtx.fillStyle = 'var(--cyan-glow)';
+    vrCtx.beginPath();
+    vrCtx.arc(10, 0, 4, 0, 2 * Math.PI);
+    vrCtx.fill();
+    
+    // Solar deck
+    vrCtx.fillStyle = '#1e3a8a';
+    vrCtx.fillRect(-10, -8, 14, 16);
+    
+    vrCtx.restore();
+};
+
+const runVRProgram = () => {
+    if (state.vrSequence.length === 0) {
+        alert("🚨 ¡Consola vacía! Agrega bloques de órdenes Scratch para programar el robot.");
         return;
     }
     
-    if (state.simRunning) return;
+    if (state.vrSimRunning) return;
     
-    state.simRunning = true;
-    const badge = document.getElementById('sim-status-badge');
-    badge.textContent = "EN MARCHA";
+    state.vrSimRunning = true;
+    const badge = document.getElementById('vr-status-badge');
+    badge.textContent = "EN MARCHA ⚡";
     badge.className = "sim-badge running";
     
-    robotSimX = 50;
-    simProgress = 0.0;
+    // Reset start coords
+    state.vrRobotX = 50;
+    state.vrRobotY = 80;
+    state.vrRobotAngle = 0; // pointing right
     
-    const wsBlocks = document.querySelectorAll('#blocks-workspace .code-block');
+    const wsBlocks = document.querySelectorAll('#vr-blocks-workspace .code-block');
     wsBlocks.forEach(b => b.classList.remove('highlight-run'));
-    
-    // Compile sequence verification
-    const compiledTypes = state.codingSequence.map(b => b.type);
     
     let blockIndex = 0;
     
-    const executeNextStep = () => {
-        if (blockIndex >= state.codingSequence.length) {
-            // End of block program, check final results!
-            verifyFinalMarsPosition(compiledTypes);
+    const executeNextVRStep = () => {
+        if (blockIndex >= state.vrSequence.length) {
+            // Evaluates final coordinates landing success!
+            evaluateVRMazeCompletion();
             return;
         }
         
-        const activeBlock = state.codingSequence[blockIndex];
+        const activeBlock = state.vrSequence[blockIndex];
         const blockEl = wsBlocks[blockIndex];
         blockEl.classList.add('highlight-run');
         
-        // Run logic per block type
-        if (activeBlock.type === 'mover') {
-            SpaceSynth.playMotorHum(1);
+        if (activeBlock.type === 'avanzar') {
+            SpaceSynth.playGearHum(1.2);
             let steps = 0;
-            const driveInterval = setInterval(() => {
-                robotSimX += 4;
-                drawMarsSimulation(robotSimX);
+            const driveInt = setInterval(() => {
+                // Move based on current angle (0=Right, 90=Down, 180=Left, 270=Up)
+                const rad = state.vrRobotAngle * Math.PI / 180;
+                state.vrRobotX += Math.cos(rad) * 3.75; // total 75 px per step
+                state.vrRobotY += Math.sin(rad) * 3.75;
+                
+                // Out of bounds check
+                if (state.vrRobotX < 15 || state.vrRobotX > vrCanvas.width - 15 ||
+                    state.vrRobotY < 15 || state.vrRobotY > vrCanvas.height - 15) {
+                    clearInterval(driveInt);
+                    triggerVRCrash("¡Te has salido de la zona de exploración marciana!");
+                    return;
+                }
+                
+                drawVRSimulationFrame();
                 steps++;
                 
-                if (steps >= 20) { // Drive animation distance
-                    clearInterval(driveInterval);
+                if (steps >= 20) {
+                    clearInterval(driveInt);
                     blockEl.classList.remove('highlight-run');
                     blockIndex++;
-                    executeNextStep();
+                    executeNextVRStep();
                 }
-            }, 50);
+            }, 30);
             
-        } else if (activeBlock.type === 'esperar') {
-            let countdown = 5.0;
-            const timerEl = document.getElementById('sim-timer');
+        } else if (activeBlock.type === 'si-roca') {
+            // Sonar Scan trigger
+            SpaceSynth.playLaser();
+            drawVRSimulationFrame(true); // draw sensor line
             
-            const timerInterval = setInterval(() => {
-                countdown -= 0.5;
-                timerEl.textContent = `${countdown.toFixed(1)}s`;
-                SpaceSynth.playBeep(400, 0.03);
+            setTimeout(() => {
+                drawVRSimulationFrame(false); // clear scan
                 
-                if (countdown <= 0) {
-                    clearInterval(timerInterval);
-                    timerEl.textContent = "0.0s";
-                    blockEl.classList.remove('highlight-run');
-                    blockIndex++;
-                    executeNextStep();
+                // Check if Rock is in front!
+                // Rover at (125, 80) pointing Right (0 degs), rock is at (200, 80) -> distance is 75px. Laser hits!
+                const facingRock = state.vrRobotAngle === 0 && 
+                                   Math.abs(state.vrRobotY - state.vrRockY) < 15 && 
+                                   state.vrRobotX < state.vrRockX && 
+                                   (state.vrRockX - state.vrRobotX) < 100;
+                                   
+                if (facingRock) {
+                    // Turn 90 degs clockwise (Girar Derecha: pointing down)
+                    state.vrRobotAngle = (state.vrRobotAngle + 90) % 360;
+                    SpaceSynth.playBeep(900, 0.1);
+                    drawVRSimulationFrame();
                 }
+                
+                blockEl.classList.remove('highlight-run');
+                blockIndex++;
+                executeNextVRStep();
             }, 500);
             
-        } else if (activeBlock.type === 'detectar') {
-            SpaceSynth.playLaser();
-            drawMarsSimulation(robotSimX, true); // True triggers glowing laser scan
+        } else if (activeBlock.type === 'girar-izq') {
+            // Girar Izquierda: rotates 90 degs counter-clockwise
+            state.vrRobotAngle = (state.vrRobotAngle - 90 + 360) % 360;
+            SpaceSynth.playBeep(450, 0.1);
+            drawVRSimulationFrame();
             
-            const lidarEl = document.getElementById('sim-lidar');
-            let dist = 300;
-            const scanAnim = setInterval(() => {
-                dist -= 20;
-                lidarEl.textContent = `${dist}m`;
-                if (dist <= 50) {
-                    clearInterval(scanAnim);
-                    lidarEl.textContent = "45m ⚠️";
-                    drawMarsSimulation(robotSimX, false); // clear scan laser
-                    blockEl.classList.remove('highlight-run');
-                    blockIndex++;
-                    executeNextStep();
-                }
-            }, 80);
+            setTimeout(() => {
+                blockEl.classList.remove('highlight-run');
+                blockIndex++;
+                executeNextVRStep();
+            }, 300);
             
-        } else if (activeBlock.type === 'detener') {
-            SpaceSynth.playBeep(300, 0.15, 'sawtooth');
+        } else if (activeBlock.type === 'detener-meta') {
+            // SI en meta: detiene
+            SpaceSynth.playBeep(300, 0.2, 'sawtooth');
             blockEl.classList.remove('highlight-run');
             blockIndex++;
-            executeNextStep();
+            executeNextVRStep();
         }
     };
     
-    // Start block thread
-    executeNextStep();
+    executeNextVRStep();
 };
 
-const verifyFinalMarsPosition = (compiledTypes) => {
-    const badge = document.getElementById('sim-status-badge');
-    state.simRunning = false;
+const evaluateVRMazeCompletion = () => {
+    state.vrSimRunning = false;
+    const badge = document.getElementById('vr-status-badge');
     
-    // Match exact logical goal: Mover -> Esperar -> Detectar -> Detener
-    const exactMatch = compiledTypes.length === 4 &&
-                       compiledTypes[0] === 'mover' &&
-                       compiledTypes[1] === 'esperar' &&
-                       compiledTypes[2] === 'detectar' &&
-                       compiledTypes[3] === 'detener';
-                       
-    if (exactMatch && robotSimX >= 120 && robotSimX <= 220) {
-        // Safe stop: Success!
-        badge.textContent = "LOGRADO";
+    // Check if robot is near Goal coordinate (300, 250)
+    const distToGoal = Math.hypot(state.vrRobotX - state.vrGoalX, state.vrRobotY - state.vrGoalY);
+    const crashedIntoRock = Math.hypot(state.vrRobotX - state.vrRockX, state.vrRobotY - state.vrRockY) < 26;
+    
+    if (crashedIntoRock) {
+        triggerVRCrash("¡Chocaste contra la roca marciana!");
+        return;
+    }
+    
+    if (distToGoal < 30) {
+        // Success!
+        badge.textContent = "LOGRADO 🎉";
         badge.className = "sim-badge success";
         SpaceSynth.playSuccess();
-        
-        // Confetti celebration chimes trigger
         triggerStarConfetti();
-        
-        // Draw green defensive shield surrounding the robot
-        marsCtx.strokeStyle = '#39ff14';
-        marsCtx.lineWidth = 4;
-        marsCtx.shadowColor = '#39ff14';
-        marsCtx.shadowBlur = 15;
-        marsCtx.beginPath();
-        marsCtx.arc(robotSimX + 24, 250, 42, 0, 2 * Math.PI);
-        marsCtx.stroke();
-        marsCtx.shadowBlur = 0;
-        
-        alert(`🎉 ¡EXCELENTE, INGENIERO ${state.childName.toUpperCase()}! Tu robot se detuvo justo a tiempo antes del cráter. Has superado el reto y programado con maestría.`);
+        alert(`🏆 ¡FORMIDABLE, PROGRAMADOR ${state.childName.toUpperCase()}! Completaste el laberinto VR esquivando la roca con tus sensores y bucles lógicos.`);
     } else {
-        // Failure: Robot falls inside
-        badge.textContent = "ESTRELLADO";
+        // Stopped in wrong place
+        badge.textContent = "DESVIADO 🧭";
         badge.className = "sim-badge crashed";
         SpaceSynth.playError();
-        
-        // Falling crash physics animation
-        let fallY = 230;
-        const fallInterval = setInterval(() => {
-            robotSimX += 2;
-            fallY += 6;
-            marsCtx.clearRect(0, 0, marsCanvas.width, marsCanvas.height);
-            drawMarsSimulation(robotSimX);
-            drawSpaceRobot(robotSimX, fallY);
-            
-            if (fallY >= 320) {
-                clearInterval(fallInterval);
-                
-                // Draw funny boom smoke puff
-                marsCtx.fillStyle = 'rgba(255, 119, 0, 0.7)';
-                marsCtx.beginPath();
-                marsCtx.arc(robotSimX + 20, 310, 25, 0, 2 * Math.PI);
-                marsCtx.arc(robotSimX + 35, 310, 20, 0, 2 * Math.PI);
-                marsCtx.fill();
-                
-                alert("💥 ¡Oh no! El robot no se detuvo y cayó dentro del cráter marciano. Recuerda: debes moverte adelante, esperar 5s, detectar el peligro y detenerte.");
-            }
-        }, 30);
+        alert("🛰️ Tu rover se detuvo, pero no llegó a la Base Roja de la NASA. ¡Revisa el orden de tus bloques y recalcula la ruta!");
     }
 };
 
-const resetMarsSim = () => {
-    state.simRunning = false;
-    robotSimX = 50;
+const triggerVRCrash = (reason) => {
+    state.vrSimRunning = false;
+    const badge = document.getElementById('vr-status-badge');
+    badge.textContent = "FALLIDO 💥";
+    badge.className = "sim-badge crashed";
+    SpaceSynth.playError();
     
-    const badge = document.getElementById('sim-status-badge');
+    // Draw crash cartoon puff
+    vrCtx.fillStyle = 'rgba(255, 0, 50, 0.7)';
+    vrCtx.beginPath();
+    vrCtx.arc(state.vrRobotX, state.vrRobotY, 22, 0, 2 * Math.PI);
+    vrCtx.fill();
+    
+    alert(`💥 ¡Choque! ${reason} Intenta reordenar tus bloques Scratch.`);
+};
+
+const resetVRSim = () => {
+    state.vrSimRunning = false;
+    state.vrRobotX = 50;
+    state.vrRobotY = 80;
+    state.vrRobotAngle = 0;
+    
+    const badge = document.getElementById('vr-status-badge');
     badge.textContent = "LISTO";
     badge.className = "sim-badge";
     
-    document.getElementById('sim-timer').textContent = "0.0s";
-    document.getElementById('sim-lidar').textContent = "300m";
-    
-    const wsBlocks = document.querySelectorAll('#blocks-workspace .code-block');
+    const wsBlocks = document.querySelectorAll('#vr-blocks-workspace .code-block');
     wsBlocks.forEach(b => b.classList.remove('highlight-run'));
     
-    drawMarsSimulation(robotSimX, false);
+    drawVRSimulationFrame();
     SpaceSynth.playBeep(500, 0.05);
 };
 
 // ==========================================================================
-// 7. FASE 4: BITÁCORA PHYSICAL PROJECTS
+// 7. MÓDULO 4: HARDWARE ACCORDIONS & PREVIEWS
 // ==========================================================================
-let kickerCanvas, kickerCtx;
-let kickerLeverAngle = 0; // Kicker physical lever pull angle
-let kickerBallX = 70;
-let kickerBallY = 115;
-let kickerBallVX = 0;
-let kickerBallVY = 0;
-let isLeverAnimating = false;
-
-const initPhysicsKicker = () => {
-    kickerCanvas = document.getElementById('kicker-canvas');
-    kickerCtx = kickerCanvas.getContext('2d');
+const initHardwareMissions = () => {
+    const headers = document.querySelectorAll('.accordion-header');
     
-    drawKickerStage();
-    
-    // Roberto mechanical mouth slider
-    const jawSlider = document.getElementById('roberto-slider-mouth');
-    const jawElement = document.getElementById('roberto-jaw-el');
-    
-    jawSlider.addEventListener('input', (e) => {
-        const val = e.target.value;
-        jawElement.style.bottom = `${12 - val/3.5}px`; // animate puppet mouth
-    });
-    
-    // Play cool robotic synthesizer speech beep clicks
-    document.getElementById('btn-roberto-talk').onclick = () => {
-        SpaceSynth.playBeep(350, 0.08, 'sawtooth');
-        setTimeout(() => SpaceSynth.playBeep(450, 0.06, 'sawtooth'), 100);
-        setTimeout(() => SpaceSynth.playBeep(300, 0.1, 'sawtooth'), 180);
-        
-        // Walk trigger modal
-        document.getElementById('modal-roberto').style.display = 'flex';
-    };
-    
-    document.getElementById('btn-close-roberto').onclick = () => {
-        document.getElementById('modal-roberto').style.display = 'none';
-        SpaceSynth.playBeep(500, 0.05);
-    };
-    
-    // Anti-frost cryo alert simulator
-    const tempSlider = document.getElementById('temp-slider');
-    const tempDisplay = document.getElementById('temp-display');
-    const tempStatus = document.getElementById('temp-status');
-    const ambient = document.getElementById('weather-ambient');
-    const strobe = document.getElementById('frost-strobe');
-    let alarmTimer = null;
-    
-    tempSlider.addEventListener('input', (e) => {
-        const temp = parseInt(e.target.value);
-        tempDisplay.textContent = `${temp}°C`;
-        
-        if (temp < 0) {
-            tempStatus.textContent = "ALERTA DE HELADA 🥶";
-            ambient.style.background = 'radial-gradient(circle, #004466 0%, #060517 100%)';
-            strobe.classList.add('blinking');
+    headers.forEach(header => {
+        header.addEventListener('click', () => {
+            const card = header.parentElement;
+            const body = card.querySelector('.accordion-body');
+            const arrow = header.querySelector('.toggle-arrow');
             
-            // Trigger loop alarm beep sounds
-            if(!alarmTimer) {
-                alarmTimer = setInterval(() => {
-                    SpaceSynth.playAlarmSirena(true);
-                }, 800);
-            }
-        } else {
-            tempStatus.textContent = temp > 35 ? "Calor Extremo 🥵" : "Clima Templado 🟢";
-            ambient.style.background = '#060517';
-            strobe.classList.remove('blinking');
+            const isOpen = card.classList.contains('active-card');
             
-            clearInterval(alarmTimer);
-            alarmTimer = null;
-        }
-    });
-    
-    // Soccer Moon Kicker Physics Catapult buttons
-    document.getElementById('btn-kicker-pull').onclick = () => {
-        if(isLeverAnimating) return;
-        SpaceSynth.playBeep(250, 0.1, 'triangle');
-        kickerLeverAngle = -Math.PI / 4; // pull 45 degs back
-        state.soccerLeverPower = 80;
-        document.getElementById('kicker-power-meter').style.width = '80%';
-        drawKickerStage();
-    };
-    
-    document.getElementById('btn-kicker-shoot').onclick = () => {
-        if(isLeverAnimating || kickerLeverAngle === 0) return;
-        
-        isLeverAnimating = true;
-        SpaceSynth.playBeep(180, 0.1, 'sawtooth'); // spring snap snap sound
-        
-        // Spring recoil snap animation
-        let snapSpeed = 0.15;
-        const shootTimer = setInterval(() => {
-            kickerLeverAngle += snapSpeed;
-            if (kickerLeverAngle >= 0.05) {
-                kickerLeverAngle = 0;
-                clearInterval(shootTimer);
-                
-                // Kick ball physical forces (apply Moon low gravity)
-                SpaceSynth.playBeep(250, 0.08, 'sine'); // thud sound
-                
-                kickerBallVX = (state.soccerLeverPower / 10) * 1.8;
-                kickerBallVY = -(state.soccerLeverPower / 10) * 1.5;
-                
-                animateMoonSoccerBall();
+            // Close all
+            document.querySelectorAll('.mission-accordion-card').forEach(c => {
+                c.classList.remove('active-card');
+                c.querySelector('.accordion-body').style.display = 'none';
+                c.querySelector('.toggle-arrow').style.transform = 'rotate(0deg)';
+            });
+            
+            if (!isOpen) {
+                card.classList.add('active-card');
+                body.style.display = 'block';
+                arrow.style.transform = 'rotate(180deg)';
+                SpaceSynth.playBeep(650, 0.06);
+            } else {
+                SpaceSynth.playBeep(350, 0.05);
             }
-            drawKickerStage();
-        }, 20);
-    };
-};
-
-const drawKickerStage = () => {
-    kickerCtx.clearRect(0, 0, kickerCanvas.width, kickerCanvas.height);
-    
-    // Draw physics pitch coordinates
-    kickerCtx.fillStyle = '#060517';
-    kickerCtx.fillRect(0, 0, kickerCanvas.width, kickerCanvas.height);
-    
-    // Pitch floor line
-    kickerCtx.strokeStyle = 'rgba(255,255,255,0.2)';
-    kickerCtx.lineWidth = 2;
-    kickerCtx.beginPath();
-    kickerCtx.moveTo(0, 130);
-    kickerCtx.lineTo(kickerCanvas.width, 130);
-    kickerCtx.stroke();
-    
-    // Draw goal post on far right
-    kickerCtx.strokeStyle = '#fff';
-    kickerCtx.strokeRect(240, 70, 40, 60);
-    
-    // Draw Kicker Mech Lever (lever fulcrum anchor at x=50, y=130)
-    kickerCtx.strokeStyle = '#00f3ff';
-    kickerCtx.lineWidth = 6;
-    kickerCtx.beginPath();
-    kickerCtx.moveTo(50, 130);
-    
-    // Pivot line coordinates based on pull angle
-    const targetX = 50 + Math.sin(kickerLeverAngle) * 35;
-    const targetY = 130 - Math.cos(kickerLeverAngle) * 35;
-    
-    kickerCtx.lineTo(targetX, targetY);
-    kickerCtx.stroke();
-    
-    // fulcrum hub
-    kickerCtx.fillStyle = '#ff007f';
-    kickerCtx.beginPath();
-    kickerCtx.arc(50, 130, 8, 0, 2 * Math.PI);
-    kickerCtx.fill();
-    
-    // Draw Soccer ball
-    kickerCtx.fillStyle = '#fff';
-    kickerCtx.beginPath();
-    kickerCtx.arc(kickerBallX, kickerBallY, 8, 0, 2 * Math.PI);
-    kickerCtx.fill();
-    
-    // draw moon pattern panels
-    kickerCtx.fillStyle = '#000';
-    kickerCtx.beginPath();
-    kickerCtx.arc(kickerBallX - 3, kickerBallY - 2, 2, 0, 2 * Math.PI);
-    kickerCtx.arc(kickerBallX + 3, kickerBallY + 2, 1.5, 0, 2 * Math.PI);
-    kickerCtx.fill();
-};
-
-const animateMoonSoccerBall = () => {
-    const moonGravity = 0.25; // physical low lunar gravity simulation loop
-    
-    const physicsTimer = setInterval(() => {
-        kickerBallX += kickerBallVX;
-        kickerBallVY += moonGravity;
-        kickerBallY += kickerBallVY;
-        
-        // Bounce off ground
-        if (kickerBallY >= 122) {
-            kickerBallY = 122;
-            kickerBallVY = -kickerBallVY * 0.65; // restitution bounce bounce
-            kickerBallVX *= 0.85; // friction
-            SpaceSynth.playBeep(120, 0.05); // bounce thud sound
-        }
-        
-        // Bounce off right goal walls
-        if (kickerBallX >= kickerCanvas.width - 8) {
-            kickerBallX = kickerCanvas.width - 8;
-            kickerBallVX = -kickerBallVX * 0.5;
-            SpaceSynth.playBeep(220, 0.05);
-        }
-        
-        drawKickerStage();
-        
-        // Stop updates when velocity is near zero
-        if (Math.abs(kickerBallVX) < 0.1 && Math.abs(kickerBallVY) < 0.1 && kickerBallY >= 122) {
-            clearInterval(physicsTimer);
-            isLeverAnimating = false;
-            kickerBallX = 70;
-            kickerBallY = 115;
-            kickerLeverAngle = 0;
-            document.getElementById('kicker-power-meter').style.width = '0%';
-            drawKickerStage();
-        }
-    }, 30);
+        });
+    });
 };
 
 // ==========================================================================
-// 8. NASA ASTRO-ENGINEER CERTIFICATE CANVAS COMPILER
+// 8. conclusiÓN & DIPLOMA "ESPECIALISTA EN NAVEGACIÓN Y SENSORES"
 // ==========================================================================
 const initCertificatePreview = () => {
     const certCanvas = document.getElementById('diploma-canvas');
     const certCtx = certCanvas.getContext('2d');
     
-    // Pre-draw standard certificate background
-    drawStaticCertificateFrame(certCtx, certCanvas);
+    drawDiplomaLayout(certCtx, certCanvas);
     
-    // Photo upload listener
-    const uploadZone = document.getElementById('upload-zone');
-    const fileInput = document.getElementById('diploma-photo-input');
-    const previewContainer = document.getElementById('photo-preview-container');
-    const previewImg = document.getElementById('photo-preview-img');
-    
-    uploadZone.onclick = () => fileInput.click();
-    
-    uploadZone.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        uploadZone.style.borderColor = 'var(--cyan-glow)';
-    });
-    
-    uploadZone.addEventListener('dragleave', () => {
-        uploadZone.style.borderColor = 'rgba(255, 255, 255, 0.15)';
-    });
-    
-    uploadZone.addEventListener('drop', (e) => {
-        e.preventDefault();
-        const file = e.dataTransfer.files[0];
-        if (file && file.type.startsWith('image/')) {
-            loadUploadedFile(file);
-        }
-    });
-    
-    fileInput.addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            loadUploadedFile(file);
-        }
-    });
-    
-    const loadUploadedFile = (file) => {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-            state.uploadedPhoto = event.target.result;
-            previewImg.src = event.target.result;
-            previewContainer.style.display = 'block';
-            uploadZone.style.display = 'none';
-            SpaceSynth.playBeep(900, 0.1);
-        };
-        reader.readAsDataURL(file);
-    };
-    
-    document.getElementById('btn-remove-photo').onclick = () => {
-        state.uploadedPhoto = null;
-        previewImg.src = "";
-        previewContainer.style.display = 'none';
-        uploadZone.style.display = 'flex';
-        SpaceSynth.playError();
-    };
-    
-    // Generate full certificate on final compile button click
     const genBtn = document.getElementById('btn-generate-diploma');
     const dlBtn = document.getElementById('btn-download-diploma');
     
@@ -1332,332 +982,123 @@ const initCertificatePreview = () => {
         document.getElementById('user-display').innerHTML = `Astro-${state.childName} 🎖️`;
         
         SpaceSynth.playSuccess();
+        triggerStarConfetti();
         
-        // Start full render
-        compileNASAStudioDiploma(certCtx, certCanvas, () => {
-            dlBtn.disabled = false;
-        });
+        // Compile full cert
+        compileNASADiploma(certCtx, certCanvas);
+        dlBtn.removeAttribute('disabled');
     };
     
     dlBtn.onclick = () => {
         const link = document.createElement('a');
-        link.download = `diploma_nasa_${state.childName}.png`;
+        link.download = `diploma_navegacion_${state.childName}.png`;
         link.href = certCanvas.toDataURL();
         link.click();
         SpaceSynth.playBeep(900, 0.1);
     };
 };
 
-const drawStaticCertificateFrame = (ctx, canvas) => {
-    // Elegant Deep navy parchment galactic styling
-    const frameGrad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-    frameGrad.addColorStop(0, '#0c0a24');
-    frameGrad.addColorStop(0.5, '#13113c');
-    frameGrad.addColorStop(1, '#05031a');
-    ctx.fillStyle = frameGrad;
+const drawDiplomaLayout = (ctx, canvas) => {
+    // OLED cosmic glassmorphism background
+    const bgGrad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+    bgGrad.addColorStop(0, '#040212');
+    bgGrad.addColorStop(0.5, '#0b092a');
+    bgGrad.addColorStop(1, '#03010b');
+    ctx.fillStyle = bgGrad;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
-    // Gold borders (Double-Bezel hardware feeling)
+    // Double bezel gold borders
     ctx.strokeStyle = '#d4af37';
     ctx.lineWidth = 6;
-    ctx.strokeRect(10, 10, canvas.width - 20, canvas.height - 20);
+    ctx.strokeRect(12, 12, canvas.width - 24, canvas.height - 24);
     
-    ctx.strokeStyle = 'rgba(212, 175, 55, 0.4)';
-    ctx.lineWidth = 1.5;
-    ctx.strokeRect(18, 18, canvas.width - 36, canvas.height - 36);
+    ctx.strokeStyle = 'rgba(0, 243, 255, 0.3)';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(22, 22, canvas.width - 44, canvas.height - 44);
     
-    // Red/Blue stripes in corner (Retro NASA astronaut badge style)
-    ctx.fillStyle = '#ff003c';
-    ctx.fillRect(25, 25, 40, 4);
+    // NASA badge retro stripes
+    ctx.fillStyle = '#ff0055';
+    ctx.fillRect(30, 30, 45, 4);
     ctx.fillStyle = '#0077ff';
-    ctx.fillRect(25, 31, 40, 4);
+    ctx.fillRect(30, 37, 45, 4);
 };
 
-const compileNASAStudioDiploma = (ctx, canvas, callback) => {
-    drawStaticCertificateFrame(ctx, canvas);
+const compileNASADiploma = (ctx, canvas) => {
+    drawDiplomaLayout(ctx, canvas);
     
-    // Title texts
     ctx.fillStyle = '#ffffff';
     ctx.textAlign = 'center';
-    ctx.font = "bold 26px 'Space Grotesk'";
+    
+    // Title Header
+    ctx.font = "bold 24px 'Space Grotesk'";
     ctx.shadowColor = 'rgba(0, 243, 255, 0.5)';
-    ctx.shadowBlur = 8;
-    ctx.fillText("ACADEMIA DE ASTRO-INGENIERÍA", canvas.width / 2, 70);
+    ctx.shadowBlur = 10;
+    ctx.fillText("ACADEMIA DE ASTRO-INGENIERÍA", canvas.width / 2, 75);
     ctx.shadowBlur = 0; // reset
     
     ctx.fillStyle = '#d4af37';
-    ctx.font = "bold 16px 'Space Grotesk'";
-    ctx.fillText("LA ADMINISTRACIÓN NACIONAL DE AERONÁUTICA Y DEL ESPACIO (NASA)", canvas.width / 2, 100);
+    ctx.font = "bold 15px 'Space Grotesk'";
+    ctx.fillText("ADMINISTRACIÓN NACIONAL DE AERONÁUTICA Y DEL ESPACIO", canvas.width / 2, 105);
     
     ctx.fillStyle = '#ffffff';
     ctx.font = "300 13px 'Outfit'";
-    ctx.fillText("Otorga con el más alto honor este Diploma de Grado a:", canvas.width / 2, 140);
+    ctx.fillText("Por cuanto ha demostrado maestría controlando engranajes,", canvas.width / 2, 145);
+    ctx.fillText("calibrando radares ultrasónicos y programando laberintos lógicos,", canvas.width / 2, 165);
+    ctx.fillText("la Flota Estelar le otorga con honores este Diploma de:", canvas.width / 2, 185);
     
-    // Kid's personalized name
-    ctx.fillStyle = '#00f3ff';
-    ctx.font = "bold 34px 'Space Grotesk'";
-    ctx.shadowColor = '#00f3ff';
-    ctx.shadowBlur = 10;
-    ctx.fillText(state.childName.toUpperCase(), canvas.width / 2, 185);
+    // Title of Achievement
+    ctx.fillStyle = '#ff007f';
+    ctx.font = "bold 21px 'Space Grotesk'";
+    ctx.shadowColor = 'rgba(255,0,127,0.5)';
+    ctx.shadowBlur = 8;
+    ctx.fillText("ESPECIALISTA EN NAVEGACIÓN Y SENSORES", canvas.width / 2, 225);
     ctx.shadowBlur = 0;
     
     ctx.fillStyle = '#ffffff';
-    ctx.font = "300 14px 'Outfit'";
-    ctx.fillText("por completar con éxito todas las fases de entrenamiento espacial", canvas.width / 2, 225);
-    ctx.fillText("y diseñar el robot explorador del futuro: Nivel 2 (Interacción y Sensores).", canvas.width / 2, 245);
+    ctx.font = "300 13px 'Outfit'";
+    ctx.fillText("Al Cadete Astro-Ingeniero:", canvas.width / 2, 260);
     
-    // Draw Stamp seal ( fulcrum badge )
-    ctx.fillStyle = 'rgba(212, 175, 55, 0.15)';
+    // Personalized Name
+    ctx.fillStyle = 'var(--cyan-glow)';
+    ctx.font = "bold 32px 'Space Grotesk'";
+    ctx.shadowColor = 'var(--cyan-glow)';
+    ctx.shadowBlur = 12;
+    ctx.fillText(state.childName.toUpperCase(), canvas.width / 2, 305);
+    ctx.shadowBlur = 0;
+    
+    // Approval stamp
+    ctx.fillStyle = 'rgba(212, 175, 55, 0.1)';
     ctx.beginPath();
-    ctx.arc(500, 320, 45, 0, 2 * Math.PI);
+    ctx.arc(510, 340, 42, 0, 2 * Math.PI);
     ctx.fill();
     ctx.strokeStyle = '#d4af37';
     ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.arc(500, 320, 40, 0, 2 * Math.PI);
+    ctx.arc(510, 340, 38, 0, 2 * Math.PI);
     ctx.stroke();
     
     ctx.fillStyle = '#d4af37';
     ctx.font = "bold 8px 'Space Grotesk'";
-    ctx.fillText("NASA CADET", 500, 312);
-    ctx.fillText("APROBADO", 500, 323);
-    ctx.fillText("FLOTA ESTELAR", 500, 332);
+    ctx.fillText("NASA CADET", 510, 332);
+    ctx.fillText("NIVEL 2", 510, 343);
+    ctx.fillText("APROBADO", 510, 353);
     
     // Signature
     ctx.fillStyle = 'rgba(255,255,255,0.7)';
     ctx.font = "italic 13px 'Outfit'";
-    ctx.fillText("Comandante Juanpi", 120, 345);
+    ctx.fillText("Comandante Juanpi", 120, 348);
     ctx.lineWidth = 1;
     ctx.strokeStyle = 'rgba(255,255,255,0.3)';
     ctx.beginPath();
-    ctx.moveTo(50, 330);
-    ctx.lineTo(190, 330);
+    ctx.moveTo(50, 335);
+    ctx.lineTo(190, 335);
     ctx.stroke();
     ctx.font = "10px 'Outfit'";
-    ctx.fillText("Director de Astro-Ingeniería", 120, 360);
-    
-    // DRAW PICTURE: uploaded photo OR sketch drawing blueprint!
-    let imgSource = state.uploadedPhoto || state.drawingSaved;
-    
-    if (imgSource) {
-        const image = new Image();
-        image.onload = () => {
-            // Draw visual nested frame border around picture
-            ctx.strokeStyle = '#00f3ff';
-            ctx.lineWidth = 2;
-            ctx.strokeRect(268, 278, 124, 94);
-            
-            // Draw image clip fitting properly
-            ctx.drawImage(image, 270, 280, 120, 90);
-            
-            if (callback) callback();
-        };
-        image.src = imgSource;
-    } else {
-        // Fallback placeholder box
-        ctx.strokeStyle = 'rgba(255,255,255,0.15)';
-        ctx.lineWidth = 1;
-        ctx.strokeRect(270, 280, 120, 90);
-        ctx.fillStyle = 'rgba(255,255,255,0.4)';
-        ctx.font = "italic 11px 'Outfit'";
-        ctx.fillText("Sin Plano Cargado", 330, 320);
-        ctx.fillText("(Ve a la Fase 1 y Guarda)", 330, 335);
-        if (callback) callback();
-    }
+    ctx.fillText("Director de Astro-Ingeniería", 120, 363);
 };
 
 // ==========================================================================
-// 9. CONCENTRATION QUIZ GAME ENGINE
-// ==========================================================================
-let quizCurrentIndex = 0;
-let quizScore = 0;
-let quizLives = 3;
-
-const quizQuestions = [
-    {
-        q: "¿Cuáles son las tres partes principales de un robot espacial?",
-        options: [
-            "Ruedas, antena y panel solar.",
-            "Cuerpo (motores), Cerebro (control) y Sensores (sentidos).",
-            "Batería, cables y tornillos."
-        ],
-        answer: 1, // index of option
-        desc: "¡Correcto! El cuerpo le da la forma, el cerebro piensa y procesa, y los sensores son sus ojos y oídos espaciales."
-    },
-    {
-        q: "¿Para qué sirve el sensor de ultrasonido WeDo en los planetas?",
-        options: [
-            "Para medir la temperatura de los motores.",
-            "Para escuchar música y radio marciana.",
-            "Para ver y medir la distancia a obstáculos (como cráteres)."
-        ],
-        answer: 2,
-        desc: "¡Correcto! Emite ondas de radar invisibles para medir la distancia y evitar colisiones."
-    },
-    {
-        q: "¿Cuál es el 'cerebro' del Sphero BOLT que procesa nuestras órdenes?",
-        options: [
-            "La pantalla LED matrix.",
-            "El Sistema de Control.",
-            "El giroscopio giratorio."
-        ],
-        answer: 1,
-        desc: "¡Exacto! El sistema de control es el procesador que toma el código y lo convierte en movimientos."
-    },
-    {
-        q: "En nuestra misión de Marte, ¿qué bloque detiene al robot antes de caer al cráter?",
-        options: [
-            "Mover Adelante.",
-            "Detener Robot.",
-            "Esperar 5 Segundos."
-        ],
-        answer: 1,
-        desc: "¡Fabuloso! El comando 'Detener Robot' es vital para apagar los motores y frenar."
-    },
-    {
-        q: "¿Qué parte física le permite al robot 'Roberto de Marte' caminar?",
-        options: [
-            "Su sistema de palancas y motores en sus piernas.",
-            "Sus paneles de carga solar.",
-            "Su termómetro anti-heladas."
-        ],
-        answer: 0,
-        desc: "¡Excelente! Utiliza bípodos mecánicos estructurados como palancas que mueven sus dos pies."
-    }
-];
-
-const initQuizEngine = () => {
-    quizCurrentIndex = 0;
-    quizScore = 0;
-    quizLives = 3;
-    
-    document.getElementById('quiz-victory-panel').style.display = 'none';
-    document.getElementById('quiz-game-panel').style.display = 'block';
-    
-    loadQuizQuestion();
-    
-    document.getElementById('btn-quiz-next').onclick = () => {
-        document.getElementById('quiz-feedback-box').style.display = 'none';
-        quizCurrentIndex++;
-        
-        if (quizCurrentIndex >= quizQuestions.length) {
-            triggerQuizVictory();
-        } else {
-            loadQuizQuestion();
-        }
-    };
-    
-    document.getElementById('btn-quiz-restart').onclick = initQuizEngine;
-    document.getElementById('btn-goto-diploma').onclick = () => {
-        // Force navigation tab click trigger to Phase 4
-        document.getElementById('btn-nav-fase4').click();
-    };
-};
-
-const loadQuizQuestion = () => {
-    const qData = quizQuestions[quizCurrentIndex];
-    
-    // Updates HUD stats
-    document.getElementById('quiz-current-index').textContent = quizCurrentIndex + 1;
-    document.getElementById('quiz-progress').style.width = `${(quizCurrentIndex / quizQuestions.length) * 100}%`;
-    document.getElementById('quiz-points').textContent = quizScore;
-    
-    // Render lives hearts
-    const hearts = document.getElementById('quiz-lives-container');
-    hearts.innerHTML = '';
-    for(let l=0; l < quizLives; l++) {
-        hearts.innerHTML += '<i class="fa-solid fa-heart text-red"></i> ';
-    }
-    
-    // Set Question text
-    document.getElementById('quiz-question-text').textContent = qData.q;
-    
-    // Render options list buttons
-    const list = document.getElementById('quiz-options-list');
-    list.innerHTML = '';
-    
-    qData.options.forEach((opt, idx) => {
-        const btn = document.createElement('button');
-        btn.className = 'quiz-opt-btn';
-        btn.innerHTML = `
-            <span class="quiz-opt-index">${String.fromCharCode(65 + idx)}</span>
-            <span>${opt}</span>
-        `;
-        
-        btn.onclick = () => selectQuizAnswer(idx, btn);
-        list.appendChild(btn);
-    });
-    
-    document.getElementById('btn-quiz-next').style.display = 'none';
-};
-
-const selectQuizAnswer = (selectedIdx, clickedBtn) => {
-    const qData = quizQuestions[quizCurrentIndex];
-    const buttons = document.querySelectorAll('.quiz-options-list .quiz-opt-btn');
-    
-    // Disable all options buttons to prevent multiple clicks
-    buttons.forEach(b => b.classList.add('disabled'));
-    
-    const feedPanel = document.getElementById('quiz-feedback-box');
-    const feedTitle = document.getElementById('quiz-feedback-title');
-    const feedDesc = document.getElementById('quiz-feedback-desc');
-    const feedIcon = document.getElementById('quiz-feedback-icon');
-    
-    if (selectedIdx === qData.answer) {
-        // Correct answer!
-        clickedBtn.classList.add('correct');
-        quizScore += 100;
-        SpaceSynth.playSuccess();
-        
-        feedPanel.className = "quiz-feedback-box correct-feedback";
-        feedIcon.innerHTML = '<i class="fa-solid fa-square-check"></i>';
-        feedTitle.textContent = "¡CORRECTO CADETE!";
-        feedDesc.textContent = qData.desc;
-    } else {
-        // Incorrect answer
-        clickedBtn.classList.add('incorrect');
-        quizLives--;
-        SpaceSynth.playError();
-        
-        // Highlight the correct one
-        buttons[qData.answer].classList.add('correct');
-        
-        feedPanel.className = "quiz-feedback-box incorrect-feedback";
-        feedIcon.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i>';
-        feedTitle.textContent = "¡RECALCULANDO RUTA!";
-        feedDesc.textContent = `La opción correcta era: ${qData.options[qData.answer]}`;
-        
-        if (quizLives <= 0) {
-            alert("🚨 ¡Te has quedado sin escudos de energía! Recargando simulador para volver a intentar.");
-            initQuizEngine();
-            return;
-        }
-    }
-    
-    feedPanel.style.display = 'flex';
-    document.getElementById('btn-quiz-next').style.display = 'inline-flex';
-};
-
-const triggerQuizVictory = () => {
-    document.getElementById('quiz-game-panel').style.display = 'none';
-    const victory = document.getElementById('quiz-victory-panel');
-    victory.style.display = 'flex';
-    
-    document.getElementById('victory-score').textContent = quizScore;
-    document.getElementById('victory-correct').textContent = `${quizQuestions.length - (3 - quizLives)} / ${quizQuestions.length}`;
-    
-    let rank = "Cadete de Robótica";
-    if (quizScore >= 400) rank = "Comandante Supremo 🌟";
-    else if (quizScore >= 300) rank = "Astro-Ingeniero Elite 🚀";
-    
-    document.getElementById('victory-rank').textContent = rank;
-    
-    SpaceSynth.playSuccess();
-    triggerStarConfetti();
-};
-
-// ==========================================================================
-// 10. CELEBRATION STARS CONFETTI RAIN ENGINE
+// 9. CELEBRATION STARS CONFETTI RAIN ENGINE
 // ==========================================================================
 let confCanvas, confCtx;
 let confettiActive = false;
@@ -1673,7 +1114,6 @@ const triggerStarConfetti = () => {
     particles = [];
     confettiActive = true;
     
-    // Generate neon star particles
     for (let i = 0; i < 70; i++) {
         particles.push({
             x: Math.random() * confCanvas.width,
@@ -1688,7 +1128,6 @@ const triggerStarConfetti = () => {
     
     animateConfettiRain();
     
-    // Stop after 4 seconds
     setTimeout(() => {
         confettiActive = false;
         confCtx.clearRect(0, 0, confCanvas.width, confCanvas.height);
@@ -1713,7 +1152,6 @@ const animateConfettiRain = () => {
         confCtx.translate(p.x, p.y);
         confCtx.rotate(p.rot);
         
-        // Draw cute star path shapes
         confCtx.beginPath();
         for (let i = 0; i < 5; i++) {
             confCtx.lineTo(0, -p.size);
@@ -1731,15 +1169,14 @@ const animateConfettiRain = () => {
 };
 
 // ==========================================================================
-// 11. BOOTSTRAP INITIALIZER BINDINGS
+// 10. BOOTSTRAP INITIALIZER BINDINGS
 // ==========================================================================
 window.onload = () => {
     initNavigation();
-    initVoiceCommander();
-    initDrawingBoard();
-    initHardwareToys();
-    initMarsSim();
-    initPhysicsKicker();
+    initIntroWakeUp();
+    initGearPuzzle();
+    initSensorsModule();
+    initVRLaberinto();
+    initHardwareMissions();
     initCertificatePreview();
-    initQuizEngine();
 };
