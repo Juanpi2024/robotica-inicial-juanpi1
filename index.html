@@ -3,540 +3,159 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nivel 2 - Misión: Interacción y Sentidos Robóticos 🛰️</title>
-    <!-- SEO Meta Tags -->
-    <meta name="description" content="Aprende interacción, engranajes, sensores avanzados y programación de laberintos. Nivel 2 oficial de robótica espacial para pequeños ingenieros.">
-    <meta name="keywords" content="robótica, infantil, sensores, engranajes, vexcode vr, scratch, lego, arduino, nasa, juanpi">
-    
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
-    
-    <!-- FontAwesome Premium Icons -->
+    <title>Centro de Mando: Academia Robótica 🚀</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <link rel="stylesheet" href="style.css">
+    <style>
+        :root {
+            --bg-dark: #02010c;
+            --panel-bg: rgba(15, 8, 30, 0.7);
+            --cyan-glow: #00f3ff;
+            --magenta-glow: #ff007f;
+            --text: #ffffff;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { 
+            font-family: 'Outfit', sans-serif; 
+            background: radial-gradient(circle at center, #1a0a2a 0%, var(--bg-dark) 100%);
+            color: var(--text); 
+            min-height: 100vh; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: ''; position: absolute; width: 200%; height: 200%; top: -50%; left: -50%;
+            background: transparent url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="150" height="150"><circle cx="20" cy="25" r="1.5" fill="white" opacity="0.6"/><circle cx="90" cy="110" r="2" fill="cyan" opacity="0.4"/></svg>') repeat;
+            animation: rotate-stars 250s infinite linear; z-index: -1;
+        }
+
+        @keyframes rotate-stars { 100% { transform: rotate(360deg); } }
+
+        .header {
+            text-align: center; margin-top: 50px; margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-family: 'Space Grotesk'; font-size: 3.5rem; text-transform: uppercase;
+            background: linear-gradient(135deg, var(--cyan-glow), var(--magenta-glow));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(255, 0, 127, 0.3); letter-spacing: 2px;
+        }
+
+        .header p { font-size: 1.2rem; color: rgba(255,255,255,0.8); margin-top: 10px; }
+
+        .hub-grid {
+            display: flex; gap: 30px; justify-content: center; flex-wrap: wrap; max-width: 1200px; padding: 20px;
+        }
+
+        .hub-card {
+            background: var(--panel-bg);
+            border: 1px solid rgba(0, 243, 255, 0.2);
+            border-radius: 20px; width: 340px; padding: 40px 30px; text-align: center;
+            backdrop-filter: blur(15px); text-decoration: none; color: white;
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5); cursor: pointer; position: relative; overflow: hidden;
+        }
+
+        .hub-card:hover {
+            transform: translateY(-10px);
+            border-color: var(--cyan-glow);
+            box-shadow: 0 20px 40px rgba(0, 243, 255, 0.2);
+        }
+
+        .hub-card::after {
+            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
+            opacity: 0; transition: opacity 0.3s;
+        }
+        .hub-card:hover::after { opacity: 1; }
+
+        .card-icon {
+            font-size: 4rem; margin-bottom: 20px;
+            background: linear-gradient(135deg, #00f3ff, #ff007f);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+
+        .card-title {
+            font-family: 'Space Grotesk'; font-size: 1.8rem; margin-bottom: 15px;
+        }
+
+        .card-desc {
+            font-size: 1rem; color: rgba(255,255,255,0.7); line-height: 1.5;
+        }
+
+        /* Modal specific to Level 1 */
+        .modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); display: flex; justify-content: center; align-items: center;
+            z-index: 100; opacity: 0; pointer-events: none; transition: 0.4s; backdrop-filter: blur(8px);
+        }
+        .modal.active { opacity: 1; pointer-events: auto; }
+        
+        .modal-content {
+            background: var(--panel-bg); padding: 40px; border-radius: 20px;
+            border: 1px solid var(--magenta-glow); max-width: 500px; text-align: center; position: relative;
+        }
+        .close-btn {
+            position: absolute; top: 15px; right: 20px; background: transparent; border: none;
+            color: white; font-size: 1.8rem; cursor: pointer; opacity: 0.6;
+        }
+        .close-btn:hover { opacity: 1; color: var(--magenta-glow); }
+        .modal h2 { font-family: 'Space Grotesk'; color: var(--magenta-glow); font-size: 2rem; margin-bottom: 20px; }
+        .modal p { font-size: 1.1rem; color: #ccc; margin-bottom: 20px; line-height: 1.5; }
+    </style>
 </head>
 <body>
-    <!-- Background Starry Cosmos Layers -->
-    <div class="stars"></div>
-    <div class="twinkling"></div>
-    <div class="space-nebula"></div>
-    
-    <!-- HUD Space-Station Navigation Header -->
-    <header class="hud-header">
-        <div class="hud-logo">
-            <i class="fa-solid fa-radar pulse-icon"></i>
-            <span>Estación <span>Nivel 2</span></span>
+
+    <div class="header">
+        <h1>Centro de Mando 🛰️</h1>
+        <p>Academia Espacial de Robótica. Selecciona tu misión, Comandante Astro-Juanpi.</p>
+    </div>
+
+    <div class="hub-grid">
+        <!-- Nivel 1 -->
+        <div class="hub-card" id="btn-nivel-1">
+            <i class="fa-solid fa-rocket card-icon"></i>
+            <h2 class="card-title">Nivel 1</h2>
+            <p class="card-desc">Fundamentos de Mecánica. Construcción básica y principios físicos en la Tierra.</p>
         </div>
-        <nav class="hud-nav" id="hud-nav-bar">
-            <button class="nav-btn active" data-target="intro" id="btn-nav-intro"><i class="fa-solid fa-power-off"></i> 1. Despierta</button>
-            <button class="nav-btn" data-target="mod1" id="btn-nav-mod1"><i class="fa-solid fa-gear"></i> 2. Engranajes</button>
-            <button class="nav-btn" data-target="mod2" id="btn-nav-mod2"><i class="fa-solid fa-satellite-dish"></i> 3. Sensores</button>
-            <button class="nav-btn" data-target="mod3" id="btn-nav-mod3"><i class="fa-solid fa-laptop-code"></i> 4. Código</button>
-            <button class="nav-btn" data-target="mod4" id="btn-nav-mod4"><i class="fa-solid fa-house-laptop"></i> 5. Misiones</button>
-            <button class="nav-btn" data-target="diploma" id="btn-nav-diploma"><i class="fa-solid fa-award"></i> Rango 🎖️</button>
-        </nav>
-        <div class="hud-user">
-            <i class="fa-solid fa-user-astronaut"></i>
-            <span id="user-display">Astro-Juanpi 🎖️</span>
+
+        <!-- Nivel 2 -->
+        <a href="nivel2.html" class="hub-card">
+            <i class="fa-solid fa-satellite-dish card-icon"></i>
+            <h2 class="card-title">Nivel 2</h2>
+            <p class="card-desc">Interacción y Sentidos Robóticos. Sensores ultrasónicos, de color y circuitos lógicos.</p>
+        </a>
+
+        <!-- Nivel 3 -->
+        <a href="odisea.html" class="hub-card">
+            <i class="fa-solid fa-gamepad card-icon"></i>
+            <h2 class="card-title">Nivel 3</h2>
+            <p class="card-desc">Odisea Robótica: El Juego. Programación visual con bucles y simulación isométricas de rescate en Marte.</p>
+        </a>
+    </div>
+
+    <!-- Modal Nivel 1 -->
+    <div class="modal" id="modal-nivel-1">
+        <div class="modal-content">
+            <button class="close-btn" id="close-nivel-1"><i class="fa-solid fa-xmark"></i></button>
+            <h2>¡Nivel 1 Superado! 🎓</h2>
+            <p>¡Hola Comandante! El Nivel 1 (Fundamentos Físicos) ya lo has completado en el taller presencial con piezas reales de mecánica.</p>
+            <p><strong>Toda esa base de conocimiento ya está guardada en tu cerebro.</strong> ¡Estás totalmente listo para el Nivel 2!</p>
         </div>
-    </header>
+    </div>
 
-    <!-- Main Space Cabin Stage -->
-    <main class="space-ship-cabin">
-        
-        <!-- SECTION 1: INTRODUCCIÓN - ¡TU ROBOT DESPIERTA! -->
-        <section id="sect-intro" class="mission-section active-section">
-            <div class="intro-grid">
-                <div class="intro-visual">
-                    <!-- Sleeping / Waking Rover CSS Model -->
-                    <div class="outer-shell rover-wake-shell">
-                        <div class="inner-core rover-wake-core">
-                            <div class="rover-avatar" id="rover-model">
-                                <div class="rover-antenna" id="rover-ant">
-                                    <div class="antenna-dish"><i class="fa-solid fa-wifi"></i></div>
-                                    <div class="antenna-pole"></div>
-                                </div>
-                                <div class="rover-head">
-                                    <div class="rover-camera">
-                                        <div class="eye eye-left" id="eye-l"></div>
-                                        <div class="eye eye-right" id="eye-r"></div>
-                                    </div>
-                                    <div class="neck"></div>
-                                </div>
-                                <div class="rover-body">
-                                    <div class="solar-panel"></div>
-                                    <div class="chassis-core">
-                                        <div class="power-core-led" id="core-led"></div>
-                                        <span class="nasa-label">NASA</span>
-                                    </div>
-                                </div>
-                                <div class="rover-wheels-box">
-                                    <div class="wheel w-1"><i class="fa-solid fa-circle-dot"></i></div>
-                                    <div class="wheel w-2"><i class="fa-solid fa-circle-dot"></i></div>
-                                    <div class="wheel w-3"><i class="fa-solid fa-circle-dot"></i></div>
-                                </div>
-                            </div>
-                            <div class="ambient-stars"></div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="intro-content outer-shell">
-                    <div class="inner-core">
-                        <span class="badge badge-magenta"><i class="fa-solid fa-satellite"></i> Transmisión Entrante</span>
-                        <h1 class="glow-title">¡Tu Robot Despierta! 🛰️</h1>
-                        <p class="intro-text">
-                            "¡Felicidades, Comandante! Tu robot ya tiene cuerpo y cerebro, pero el espacio está lleno de peligros y misterios. En este nivel, le daremos a tu explorador la capacidad de <strong>'sentir' su entorno</strong>, esquivar rocas marcianas y seguir misiones por sí solo. ¡Es hora de hacerlo inteligente!"
-                        </p>
-                        
-                        <div class="control-activation">
-                            <button class="btn-activate-red" id="btn-activate-rover">
-                                <span class="btn-ripple"></span>
-                                <i class="fa-solid fa-power-off"></i> ¡ACTIVAR SISTEMAS!
-                            </button>
-                            <span class="status-indicator-text" id="activation-status">Rover en hibernación... ZzZ</span>
-                        </div>
-                        
-                        <div class="ecg-wave-container" id="ecg-wave">
-                            <div class="bar"></div>
-                            <div class="bar"></div>
-                            <div class="bar"></div>
-                            <div class="bar"></div>
-                            <div class="bar"></div>
-                            <div class="bar"></div>
-                            <div class="bar"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- SECTION 2: MÓDULO 1 - ENGRANAJES Y MOTORES -->
-        <section id="sect-mod1" class="mission-section">
-            <div class="section-header">
-                <span class="step-num">Módulo 1</span>
-                <h2>Engranajes y Motores (La Fuerza del Rover) ⚙️</h2>
-                <p>Para subir las empinadas montañas de Marte, las ruedas necesitan fuerza. Aquí usamos máquinas simples como los engranajes. ¡Son ruedas con dientes que se muerden entre sí para transferir movimiento y multiplicar la fuerza!</p>
-            </div>
-            
-            <div class="gear-puzzle-grid">
-                <!-- Instruction Panel -->
-                <div class="outer-shell">
-                    <div class="inner-core puzzle-instructions">
-                        <h3><i class="fa-solid fa-screwdriver-wrench"></i> Reto Mecánico</h3>
-                        <p>Arrastra los engranajes de la caja de herramientas y colócalos en los ejes del rover para conectar el motor con la rueda tractora.</p>
-                        
-                        <div class="gear-toolbox" id="gear-box">
-                            <div class="gear-drag-item item-cyan" draggable="true" data-size="small" id="gear-small">
-                                <i class="fa-solid fa-gear small-gear-icon"></i>
-                                <span>Pequeño (12T)</span>
-                            </div>
-                            <div class="gear-drag-item item-magenta" draggable="true" data-size="medium" id="gear-medium">
-                                <i class="fa-solid fa-gear medium-gear-icon"></i>
-                                <span>Mediano (24T)</span>
-                            </div>
-                            <div class="gear-drag-item item-yellow" draggable="true" data-size="large" id="gear-large">
-                                <i class="fa-solid fa-gear large-gear-icon"></i>
-                                <span>Grande (36T)</span>
-                            </div>
-                        </div>
-                        
-                        <div class="puzzle-status-box" id="gear-puzzle-feedback">
-                            <i class="fa-solid fa-triangle-exclamation"></i> Conecta los engranajes en orden correcto.
-                        </div>
-                        
-                        <button class="btn btn-action w-full" id="btn-test-gears" disabled>
-                            <i class="fa-solid fa-play"></i> Probar Engranajes ⚙️
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Simulation Board -->
-                <div class="outer-shell scale-2">
-                    <div class="inner-core gear-simulation-canvas">
-                        <div class="slope-backdrop">
-                            <!-- Incline slope line -->
-                            <div class="mars-slope" id="mars-slope-el">
-                                <div class="rover-mini" id="mini-rover-body">
-                                    <i class="fa-solid fa-truck-spaceport"></i>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="gears-train-container">
-                            <!-- Drop Slots -->
-                            <div class="gear-axis-slot slot-motor" data-expected="small" id="slot-1">
-                                <span class="slot-label">Motor (12T)</span>
-                                <div class="placed-gear-holder"></div>
-                            </div>
-                            <div class="gear-axis-slot slot-idler" data-expected="medium" id="slot-2">
-                                <span class="slot-label">Transmisión (24T)</span>
-                                <div class="placed-gear-holder"></div>
-                            </div>
-                            <div class="gear-axis-slot slot-wheel" data-expected="large" id="slot-3">
-                                <span class="slot-label">Rueda (36T)</span>
-                                <div class="placed-gear-holder"></div>
-                            </div>
-                        </div>
-                        
-                        <button class="btn-clear-puzzle" id="btn-reset-gears"><i class="fa-solid fa-trash-can"></i> Desarmar</button>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- SECTION 3: MÓDULO 2 - LOS SENTIDOS DEL ROBOT -->
-        <section id="sect-mod2" class="mission-section">
-            <div class="section-header">
-                <span class="step-num">Módulo 2</span>
-                <h2>Los Sentidos del Robot (Sensores Avanzados) 📡</h2>
-                <p>En el espacio oscuro, tu robot no tiene ojos como tú, ¡tiene sensores! Interactúa con los sensores para ver cómo percibe Marte.</p>
-            </div>
-            
-            <div class="sensors-module-grid">
-                <!-- SENSOR DE ULTRASONIDO -->
-                <div class="outer-shell">
-                    <div class="inner-core sensor-panel-card">
-                        <span class="badge badge-cyan"><i class="fa-solid fa-bat"></i> Ecolocalización</span>
-                        <h3>Sensor de Ultrasonido 📡</h3>
-                        <p>Funciona como un murciélago, enviando ondas sonoras invisibles para medir la distancia y evitar chocar con meteoritos.</p>
-                        
-                        <div class="ultrasonic-radar-display">
-                            <div class="radar-eyes">
-                                <div class="radar-lens"><div class="beam"></div></div>
-                                <div class="radar-lens"><div class="beam"></div></div>
-                            </div>
-                            
-                            <div class="sonar-wave-lines" id="sonar-radar-waves">
-                                <span class="sonar-ring"></span>
-                                <span class="sonar-ring"></span>
-                                <span class="sonar-ring"></span>
-                            </div>
-                            
-                            <div class="floating-target-meteor" id="sonar-meteor">
-                                <i class="fa-solid fa-meteor"></i>
-                            </div>
-                            
-                            <!-- Radar sweep grid -->
-                            <div class="radar-sweep-overlay" id="radar-sweep">
-                                <div class="sweep-line"></div>
-                                <div class="coord-tag">X: 120 Y: 45</div>
-                            </div>
-                        </div>
-                        
-                        <div class="readout-box">
-                            <span>Distancia: <strong id="sonar-distance-val">150</strong> cm</span>
-                            <span class="status-pill safe" id="sonar-status-pill">SEGURO</span>
-                        </div>
-                        
-                        <div class="buttons-row">
-                            <button class="btn btn-action" id="btn-toggle-vision"><i class="fa-solid fa-eye-low-vision"></i> Visión de Robot (Radar)</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- SENSOR DE COLOR -->
-                <div class="outer-shell">
-                    <div class="inner-core sensor-panel-card">
-                        <span class="badge badge-yellow"><i class="fa-solid fa-droplet"></i> Espectrometría</span>
-                        <h3>Sensor de Color 🔴🔵🟢</h3>
-                        <p>Le ayuda a seguir líneas seguras pintadas en el suelo o a encontrar minerales marcianos valiosos brillando en rojo o azul.</p>
-                        
-                        <div class="color-scanner-display">
-                            <div class="color-rover-head">
-                                <div class="spectrometer-led" id="scanner-laser-led"></div>
-                                <div class="laser-beam" id="scanner-laser-beam"></div>
-                            </div>
-                            <div class="ground-mineral-rock" id="target-mineral-soil">
-                                <i class="fa-solid fa-diamond"></i>
-                            </div>
-                        </div>
-                        
-                        <div class="readout-box color-readout">
-                            <span>Lectura Sensor: <strong id="color-sensor-val" style="color: var(--cyan-glow);">Camino Negro</strong></span>
-                            <span id="color-sensor-action" class="sensor-comment">"Siguiendo ruta segura"</span>
-                        </div>
-                        
-                        <div class="mineral-buttons-grid">
-                            <button class="btn-mineral-selector color-black active" data-color="black"><span class="color-dot" style="background-color: #111;"></span> Camino Negro</button>
-                            <button class="btn-mineral-selector color-red" data-color="red"><span class="color-dot" style="background-color: #ff3333;"></span> Mineral Rojo (Hierro)</button>
-                            <button class="btn-mineral-selector color-blue" data-color="blue"><span class="color-dot" style="background-color: #3388ff;"></span> Mineral Azul (Hielo)</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- SECTION 4: MÓDULO 3 - PROGRAMACIÓN INTELIGENTE (VR LABERINTO) -->
-        <section id="sect-mod3" class="mission-section">
-            <div class="section-header">
-                <span class="step-num">Módulo 3</span>
-                <h2>Programación Inteligente (Bucles y Condicionales) 💻</h2>
-                <p>¡Vamos a darle superpoderes al cerebro del robot usando bloques de programación lógica! Guía al rover esquivando los obstáculos en el laberinto marciano.</p>
-            </div>
-
-            <!-- VEXCODE-LIKE SIMULATOR GRID -->
-            <div class="coding-workspace-grid">
-                <!-- Blocks Palette -->
-                <div class="outer-shell">
-                    <div class="inner-core blocks-palette">
-                        <h3><i class="fa-solid fa-puzzle-piece"></i> Bloques Scratch</h3>
-                        <p class="small-desc">Haz clic en los bloques para agregarlos a tu secuencia:</p>
-                        
-                        <div class="palette-container">
-                            <div class="code-block block-move" data-block="avanzar" id="pal-avanzar">
-                                <i class="fa-solid fa-circle-arrow-right"></i> Avanzar 1 Paso
-                            </div>
-                            <div class="code-block block-sensor" data-block="si-roca" id="pal-si-roca">
-                                <i class="fa-solid fa-diamond-turn-right"></i> SI hay roca ➡️ Girar Derecha
-                            </div>
-                            <div class="code-block block-wait" data-block="girar-izq" id="pal-girar-izq">
-                                <i class="fa-solid fa-rotate-left"></i> Girar Izquierda
-                            </div>
-                            <div class="code-block block-stop" data-block="detener-meta" id="pal-detener">
-                                <i class="fa-solid fa-flag-checkered"></i> SI en meta 🛑 Detener
-                            </div>
-                        </div>
-                        
-                        <div class="vex-hints">
-                            <h5><i class="fa-solid fa-lightbulb"></i> Pista de Navegación:</h5>
-                            <p>El rover avanzará paso a paso. Para llegar a la base roja, debes detectar la roca y girar a la derecha para rodearla.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Coding Workspace -->
-                <div class="outer-shell">
-                    <div class="inner-core workspace-area">
-                        <div class="workspace-header">
-                            <h3><i class="fa-solid fa-laptop-code"></i> Tu Programa VR</h3>
-                            <button class="btn-clear-puzzle" id="btn-clear-vr-workspace"><i class="fa-solid fa-rotate-left"></i> Limpiar</button>
-                        </div>
-                        
-                        <div class="blocks-sequence-container" id="vr-blocks-workspace">
-                            <!-- Empty message -->
-                            <div class="workspace-empty-msg" id="vr-workspace-empty">
-                                <i class="fa-solid fa-arrow-down-long animate-arrow"></i>
-                                <span>Agrega bloques de código aquí en orden</span>
-                            </div>
-                        </div>
-                        
-                        <div class="workspace-actions">
-                            <button class="btn btn-success" id="btn-run-vr"><i class="fa-solid fa-play"></i> Ejecutar Laberinto ⚡</button>
-                            <button class="btn btn-secondary" id="btn-reset-vr"><i class="fa-solid fa-rotate"></i> Reiniciar Mapa</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Canvas VEX VR Simulator -->
-                <div class="outer-shell">
-                    <div class="inner-core vr-simulation-panel">
-                        <div class="sim-header">
-                            <span><i class="fa-solid fa-compass"></i> Telemetría de Mapa VR</span>
-                            <span class="sim-badge" id="vr-status-badge">LISTO</span>
-                        </div>
-                        
-                        <div class="vr-canvas-holder">
-                            <canvas id="vr-maze-canvas" width="350" height="350"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- SECTION 5: MÓDULO 4 - MISIONES DE HARDWARE EN CASA -->
-        <section id="sect-mod4" class="mission-section">
-            <div class="section-header">
-                <span class="step-num">Módulo 4</span>
-                <h2>Misiones de Hardware en Casa (Proyectos Intermedios) 🚀</h2>
-                <p>¡Llegó el momento de construir en el mundo real! Puedes usar materiales reciclables de casa o kits de robótica. Toca una misión para desplegar sus planos y ver el robot en acción.</p>
-            </div>
-            
-            <div class="hardware-missions-container">
-                <!-- MISSION A -->
-                <div class="outer-shell mission-card-shell">
-                    <div class="inner-core mission-accordion-card">
-                        <div class="accordion-header" data-target="mision-a">
-                            <div class="header-main">
-                                <span class="badge badge-cyan">Misión A</span>
-                                <h3>Rover Seguidor de Línea 🛸</h3>
-                            </div>
-                            <i class="fa-solid fa-chevron-down toggle-arrow"></i>
-                        </div>
-                        
-                        <div class="accordion-body" id="mision-a-body">
-                            <div class="mission-desc-grid">
-                                <div class="mission-details">
-                                    <h4><i class="fa-solid fa-list-check"></i> Plan de Construcción</h4>
-                                    <p>Construye un carrito robótico que use sensores de infrarrojos para detectar el contraste y seguir un camino oscuro, ¡como si fuera una carretera segura trazada en la Luna!</p>
-                                    
-                                    <h5><i class="fa-solid fa-box-open"></i> Materiales sugeridos:</h5>
-                                    <ul>
-                                        <li>Cartón rígido o base de acrílico</li>
-                                        <li>2 motores de corriente continua (DC) con ruedas</li>
-                                        <li>1 sensor infrarrojo seguidor de línea (TCRT5000 o LEGO Color Sensor)</li>
-                                        <li>Batería de 9V o caja de pilas</li>
-                                        <li>Cinta aislante negra (para hacer la pista)</li>
-                                    </ul>
-                                </div>
-                                <div class="mission-simulator-view">
-                                    <div class="live-anim-box seguidor-linea-sim">
-                                        <div class="animated-path-line"></div>
-                                        <div class="animated-follower-rover">
-                                            <div class="sensor-glow"></div>
-                                        </div>
-                                    </div>
-                                    <span class="anim-label"><i class="fa-solid fa-circle-play"></i> Simulación Mecánica</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- MISSION B -->
-                <div class="outer-shell mission-card-shell">
-                    <div class="inner-core mission-accordion-card">
-                        <div class="accordion-header" data-target="mision-b">
-                            <div class="header-main">
-                                <span class="badge badge-magenta">Misión B</span>
-                                <h3>El Brazo Robótico Espacial 🦾</h3>
-                            </div>
-                            <i class="fa-solid fa-chevron-down toggle-arrow"></i>
-                        </div>
-                        
-                        <div class="accordion-body" id="mision-b-body">
-                            <div class="mission-desc-grid">
-                                <div class="mission-details">
-                                    <h4><i class="fa-solid fa-list-check"></i> Plan de Construcción</h4>
-                                    <p>Crea una pinza o brazo mecánico articulado basado en palancas para recoger muestras de rocas del suelo marciano sin tocarlas directamente.</p>
-                                    
-                                    <h5><i class="fa-solid fa-box-open"></i> Materiales sugeridos:</h5>
-                                    <ul>
-                                        <li>Palos de helado o tiras de cartón grueso</li>
-                                        <li>Chinches mariposa o pasadores de metal (pivotes)</li>
-                                        <li>Jeringas descartables y mangueras (para sistema hidráulico) o cuerdas de tracción</li>
-                                        <li>Pegamento o silicona caliente</li>
-                                        <li>Vaso de plástico pequeño (para la canastilla de rocas)</li>
-                                    </ul>
-                                </div>
-                                <div class="mission-simulator-view">
-                                    <div class="live-anim-box arm-hydraulic-sim">
-                                        <div class="hydraulic-piston"></div>
-                                        <div class="robotic-claw">
-                                            <div class="claw-finger l"></div>
-                                            <div class="claw-finger r"></div>
-                                        </div>
-                                        <div class="sample-mineral-rock"></div>
-                                    </div>
-                                    <span class="anim-label"><i class="fa-solid fa-circle-play"></i> Simulación Mecánica</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- MISSION C -->
-                <div class="outer-shell mission-card-shell">
-                    <div class="inner-core mission-accordion-card">
-                        <div class="accordion-header" data-target="mision-c">
-                            <div class="header-main">
-                                <span class="badge badge-yellow">Misión C</span>
-                                <h3>Robot Otto Astronauta 🤖</h3>
-                            </div>
-                            <i class="fa-solid fa-chevron-down toggle-arrow"></i>
-                        </div>
-                        
-                        <div class="accordion-body" id="mision-c-body">
-                            <div class="mission-desc-grid">
-                                <div class="mission-details">
-                                    <h4><i class="fa-solid fa-list-check"></i> Plan de Construcción</h4>
-                                    <p>Construye un pequeño robot bípedo que pueda mover sus piernas mediante servomotores y realizar un espectacular "baile de victoria" tras aterrizar en el planeta rojo.</p>
-                                    
-                                    <h5><i class="fa-solid fa-box-open"></i> Materiales sugeridos:</h5>
-                                    <ul>
-                                        <li>Cuerpo impreso en 3D o armado con cartón de jugos (Tetrapack)</li>
-                                        <li>4 servomotores pequeños (SG90 o similares)</li>
-                                        <li>Placa Arduino Nano o micro:bit con escudo de expansión</li>
-                                        <li>Sensor de ultrasonido (como los ojos de Otto)</li>
-                                        <li>Zumbador piezoeléctrico (para cantar melodías espaciales)</li>
-                                    </ul>
-                                </div>
-                                <div class="mission-simulator-view">
-                                    <div class="live-anim-box otto-dancing-sim">
-                                        <div class="otto-body">
-                                            <div class="otto-eyes">
-                                                <div class="eye"></div>
-                                                <div class="eye"></div>
-                                            </div>
-                                            <div class="otto-leg l"></div>
-                                            <div class="otto-leg r"></div>
-                                        </div>
-                                        <div class="victory-musical-notes">
-                                            <span class="note n-1">♫</span>
-                                            <span class="note n-2">♪</span>
-                                        </div>
-                                    </div>
-                                    <span class="anim-label"><i class="fa-solid fa-circle-play"></i> Simulación Mecánica</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- SECTION 6: CONCLUSIÓN Y ASCENSO DE RANGO (NASA DIPLOMA) -->
-        <section id="sect-diploma" class="mission-section">
-            <div class="section-header">
-                <span class="step-num">Conclusión</span>
-                <h2>Ascenso de Rango: Especialista en Navegación 🎖️</h2>
-                <p>¡Misión Cumplida, Comandante! Tu robot ahora puede sentir su entorno y tomar decisiones. Has dominado los sensores y los bucles de código. ¡Saca tu insignia de honor!</p>
-            </div>
-            
-            <div class="diploma-generator-box outer-shell">
-                <div class="inner-core diploma-form-grid">
-                    <div class="diploma-form-inputs">
-                        <div class="inputs-header">
-                            <i class="fa-solid fa-ribbon-award"></i>
-                            <div>
-                                <h3>Insignia de la Flota Estelar NASA</h3>
-                                <p>Ingresa tu nombre para fabricar tu diploma personalizado oficial de **Especialista en Navegación y Sensores**.</p>
-                            </div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="diploma-name">Nombre del Astro-Ingeniero:</label>
-                            <input type="text" id="diploma-name" value="Juanpi" placeholder="Tu Nombre Aquí" class="cosmic-input">
-                        </div>
-                        
-                        <button class="btn btn-success w-full" id="btn-generate-diploma">
-                            <i class="fa-solid fa-certificate"></i> Certificar Mi Nivel 2 📜
-                        </button>
-                    </div>
-
-                    <!-- Canvas Output / Diploma Preview -->
-                    <div class="diploma-preview-container">
-                        <div class="preview-badge"><i class="fa-solid fa-circle-check"></i> Diploma Certificado Nivel 2</div>
-                        <div class="diploma-canvas-wrapper">
-                            <canvas id="diploma-canvas" width="600" height="420"></canvas>
-                        </div>
-                        <button class="btn btn-secondary w-full" id="btn-download-diploma" disabled>
-                            <i class="fa-solid fa-download"></i> Descargar Diploma Oficial 📥
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-    </main>
-
-    <!-- Celebration Confetti Layer -->
-    <canvas id="confetti-canvas"></canvas>
-
-    <!-- Project Scripts -->
-    <script src="app.js"></script>
+    <script>
+        document.getElementById('btn-nivel-1').onclick = () => {
+            document.getElementById('modal-nivel-1').classList.add('active');
+        };
+        document.getElementById('close-nivel-1').onclick = () => {
+            document.getElementById('modal-nivel-1').classList.remove('active');
+        };
+    </script>
 </body>
 </html>
