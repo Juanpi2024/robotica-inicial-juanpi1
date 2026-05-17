@@ -118,11 +118,11 @@
 
     <div class="hub-grid">
         <!-- Nivel 1 -->
-        <div class="hub-card" id="btn-nivel-1">
+        <a href="nivel1.html" class="hub-card">
             <i class="fa-solid fa-rocket card-icon"></i>
             <h2 class="card-title">Nivel 1</h2>
-            <p class="card-desc">Fundamentos de Mecánica. Construcción básica y principios físicos en la Tierra.</p>
-        </div>
+            <p class="card-desc">Constructor de Robots Galácticos. Fundamentos de Mecánica, Piezas y Hardware.</p>
+        </a>
 
         <!-- Nivel 2 -->
         <a href="nivel2.html" class="hub-card">
@@ -139,23 +139,8 @@
         </a>
     </div>
 
-    <!-- Modal Nivel 1 -->
-    <div class="modal" id="modal-nivel-1">
-        <div class="modal-content">
-            <button class="close-btn" id="close-nivel-1"><i class="fa-solid fa-xmark"></i></button>
-            <h2>¡Nivel 1 Superado! 🎓</h2>
-            <p>¡Hola Comandante! El Nivel 1 (Fundamentos Físicos) ya lo has completado en el taller presencial con piezas reales de mecánica.</p>
-            <p><strong>Toda esa base de conocimiento ya está guardada en tu cerebro.</strong> ¡Estás totalmente listo para el Nivel 2!</p>
-        </div>
-    </div>
-
     <script>
-        document.getElementById('btn-nivel-1').onclick = () => {
-            document.getElementById('modal-nivel-1').classList.add('active');
-        };
-        document.getElementById('close-nivel-1').onclick = () => {
-            document.getElementById('modal-nivel-1').classList.remove('active');
-        };
+        // Hub scripts (if any)
     </script>
 </body>
 </html>
