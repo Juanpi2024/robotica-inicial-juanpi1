@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Odisea Robótica: Rescate en el Planeta Rojo 🔴</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="odisea.css">
+</head>
+<body>
+    <div id="intro-modal" class="modal active">
+        <div class="modal-content">
+            <h1>🚨 ¡Alerta en la Base Marciana!</h1>
+            <p>"Una tormenta de arena ha dispersado nuestros paneles de energía y cristales de investigación. Sin ellos, los astronautas no podrán volver a casa. ¡Eres el único Astro-Ingeniero que puede programar a nuestro fiel robot explorador, Rover-X, para recuperarlos!"</p>
+            <button id="btn-start-game" class="btn btn-primary">¡INICIAR RESCATE!</button>
+        </div>
+    </div>
+
+    <header class="game-header">
+        <div class="brand">Rover-X <span>OS</span></div>
+        <div class="level-indicator">Nivel Actual: <span id="current-level-display">1. Laberinto de Rocas</span></div>
+        <div class="economy">
+            <i class="fa-solid fa-coins"></i> <span id="coin-count">0</span> Monedas
+            <button id="btn-shop" class="btn btn-small"><i class="fa-solid fa-store"></i> Tienda</button>
+        </div>
+    </header>
+
+    <main class="game-layout">
+        <!-- ZONA DE CÓDIGO (Izquierda) -->
+        <section class="code-zone">
+            <div class="zone-header">
+                <h2><i class="fa-solid fa-puzzle-piece"></i> Zona de Código</h2>
+                <button id="btn-run" class="btn btn-success"><i class="fa-solid fa-play"></i> Ejecutar</button>
+                <button id="btn-clear" class="btn btn-danger"><i class="fa-solid fa-trash"></i> Limpiar</button>
+            </div>
+            
+            <div class="palette" id="block-palette">
+                <!-- Blocks will be injected here based on level -->
+            </div>
+
+            <div class="workspace" id="workspace">
+                <div class="workspace-placeholder">Arrastra bloques aquí</div>
+            </div>
+        </section>
+
+        <!-- SIMULADOR 3D (Derecha) -->
+        <section class="sim-zone">
+            <div class="zone-header">
+                <h2><i class="fa-solid fa-video"></i> Simulador Marciano</h2>
+                <div class="sim-status" id="sim-status">Esperando comandos...</div>
+            </div>
+            <div class="canvas-container" id="canvas-container">
+                <canvas id="game-canvas" width="600" height="500"></canvas>
+                <div id="sandstorm-overlay" class="sandstorm hidden"></div>
+            </div>
+        </section>
+    </main>
+
+    <!-- TIENDA MODAL -->
+    <div id="shop-modal" class="modal">
+        <div class="modal-content shop">
+            <button class="close-btn" id="close-shop"><i class="fa-solid fa-xmark"></i></button>
+            <h2>Tienda Rover-X</h2>
+            <div class="shop-grid">
+                <div class="shop-item" data-price="10" data-type="color" data-val="#ff007f">
+                    <div class="item-preview" style="background:#ff007f;"></div>
+                    <span>Pintura Magenta (10 <i class="fa-solid fa-coins"></i>)</span>
+                </div>
+                <div class="shop-item" data-price="20" data-type="color" data-val="#00f3ff">
+                    <div class="item-preview" style="background:#00f3ff;"></div>
+                    <span>Pintura Cian (20 <i class="fa-solid fa-coins"></i>)</span>
+                </div>
+                <div class="shop-item" data-price="30" data-type="hat" data-val="sombrero">
+                    <div class="item-preview"><i class="fa-solid fa-hat-cowboy"></i></div>
+                    <span>Sombrero Espacial (30 <i class="fa-solid fa-coins"></i>)</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- BOSS MODAL (RETO FÍSICO) -->
+    <div id="boss-modal" class="modal">
+        <div class="modal-content boss">
+            <h1>¡Alerta! ☄️ Meteorito Gigante</h1>
+            <p>"¡Un meteorito bloquea la nave de escape! Rover-X virtual no tiene suficiente fuerza. ¡Necesitamos que construyas una máquina real (un Pateador) para despejar el camino!"</p>
+            <ul>
+                <li>Usa palitos, cartón, ligas y un motor DC.</li>
+                <li>Construye una palanca que acumule tensión y lance un proyectil.</li>
+                <li>Apunta a la diana. ¡Toma una foto de tu creación y súbela para desbloquear la nave!</li>
+            </ul>
+            <div class="upload-zone">
+                <input type="file" id="boss-upload" accept="image/*,video/*">
+                <label for="boss-upload" class="btn btn-primary"><i class="fa-solid fa-upload"></i> Subir Evidencia del Pateador</label>
+            </div>
+        </div>
+    </div>
+
+    <!-- DIPLOMA MODAL -->
+    <div id="diploma-modal" class="modal">
+        <div class="modal-content diploma">
+            <h1>¡VICTORIA TOTAL! 🎖️</h1>
+            <canvas id="diploma-canvas" width="600" height="400"></canvas>
+            <button id="btn-download-diploma" class="btn btn-success"><i class="fa-solid fa-download"></i> Descargar Diploma</button>
+        </div>
+    </div>
+
+    <script src="odisea.js"></script>
+</body>
+</html>
